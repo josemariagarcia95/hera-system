@@ -1,5 +1,4 @@
-/*const request = require( 'request' );
-const querystring = require( 'querystring' );
+const request = require( 'request' );
 
 const requestData = {
 	returnFaceId: 'true',
@@ -9,15 +8,17 @@ const requestData = {
 };
 
 const options = {
-	url: 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0' + querystring.stringify( requestData ),
+	url: 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect',
+	qs: requestData,
 	method: 'POST',
 	headers: {
 		'Content-Type': 'application/json',
 		'Ocp-Apim-Subscription-Key': '6fec4c74c6974c43ad68954c9246c97b'
 	},
-	body: JSON.stringify( {
+	json: true,
+	body: {
 		url: 'http://josemariagarcia.es/img/perfil.jpg'
-	} )
+	}
 };
 
 request( options, function( error, response, body ) {
@@ -25,10 +26,12 @@ request( options, function( error, response, body ) {
 	if ( error ) {
 		console.log( error );
 	}
-	console.log( response );
+	//console.log( response );
 	console.log( body );
+	console.log( emotion );
 } );
-*/
+
+/*
 const XMLHttpRequest = require( 'xmlhttprequest' ).XMLHttpRequest;
 const request = new XMLHttpRequest();
 
@@ -38,55 +41,46 @@ request.addEventListener( 'error', logError, false );
 request.addEventListener( 'abort', logAbort, false );
 
 request.onreadystatechange = function() {
+	console.log( this.status + ' ' + this.statusText );
 	if ( this.readyState == 4 && this.status == 200 ) {
 		console.log( request.responseText );
 	} else {
 		console.log( 'Algo ha ido mal' );
-		console.log( this );
+		console.log( request.responseText );
 	}
 }
 
-/**
- * AUX
- * @param {*} evt
- */
 function logError( evt ) {
 	console.error( 'Error' );
-	console.log( evt );
+	//console.log( evt );
 }
 
-/**
- * AUX
- * @param {*} evt
- */
+
 function logProgress( evt ) {
 	console.log( 'Progress' );
-	console.log( evt );
+	//console.log( evt );
 }
 
-/**
- * AUX
- * @param {*} evt
- */
+
 function logLoad( evt ) {
 	console.log( 'Load' );
-	console.log( evt );
+	//console.log( evt );
 }
 
-/**
- * AUX
- * @param {*} evt
- */
 function logAbort( evt ) {
 	console.log( 'Abort' );
-	console.log( evt );
+	//console.log( evt );
 }
 
-request.open( 'PUT', 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0?' +
+request.open( 'POST', 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect?' +
 	'returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=emotion', true );
 
 request.setRequestHeader( 'Content-Type', 'application/json' );
 request.setRequestHeader( 'Ocp-Apim-Subscription-Key',
 	'6fec4c74c6974c43ad68954c9246c97b' );
-
-request.send( null );
+console.log( request.responseText );
+request.send( JSON.stringify( {
+	url: 'http://josemariagarcia.es/img/perfil.jpg'
+} ) );
+console.log( request.responseText );
+*/
