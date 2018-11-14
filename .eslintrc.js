@@ -20,6 +20,7 @@ module.exports = {
 		"spaced-comment": 0,
 		"comma-dangle": [ "error", "never" ],
 		"space-before-function-paren": 0,
-		"array-bracket-spacing": 0
+		"array-bracket-spacing": 0,
+		"computed-property-spacing": 0
 	}
 };

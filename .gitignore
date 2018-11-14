@@ -62,3 +62,5 @@ typings/
 
 #Git history plugin
 .history/
+
+credentials.json
