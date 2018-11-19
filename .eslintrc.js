@@ -21,6 +21,7 @@ module.exports = {
 		"comma-dangle": [ "error", "never" ],
 		"space-before-function-paren": 0,
 		"array-bracket-spacing": 0,
-		"computed-property-spacing": 0
+		"computed-property-spacing": 0,
+		"guard-for-in": 0
 	}
 };

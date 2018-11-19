@@ -64,3 +64,5 @@ typings/
 .history/
 
 credentials.json
+
+benchmark-files/

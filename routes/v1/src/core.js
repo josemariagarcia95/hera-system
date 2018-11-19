@@ -28,4 +28,5 @@ function createDetector(
 	return newDetector;
 }
 
+module.exports.createDetector = createDetector;
 //createDetector( 'azure', 'face', false, 'wwww', () => {}, () => {} );
