@@ -1,3 +1,4 @@
+/*
 const request = require( 'request' );
 const fs = require( 'fs' );
 
@@ -21,3 +22,14 @@ request( options, function( error, response, body ) {
 	}
 	console.log( body );
 } );
+*/
+
+module.exports.initialize = function() {
+	console.log( this.id + ' Initialize template' );
+};
+module.exports.extractEmotions = function() {
+	console.log( this.id + ' extractEmotions template' );
+};
+module.exports.translateToPAD = function() {
+	console.log( this.id + ' translateToPAD template' );
+};

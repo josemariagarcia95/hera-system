@@ -16,6 +16,7 @@ function Detector( id, category, realTime, url, otherOptions ) {
 	this.realTime = realTime;
 	this.url = url;
 	this.otherOptions = otherOptions;
+	console.log( 'Detector called' );
 }
 
 /** @function analyse
@@ -29,3 +30,5 @@ Detector.prototype.extractEmotions = function( media ) {
 Detector.prototype.translateToPAD = function( results ) {
 	console.log( 'Translate method in Detector class' );
 };
+
+module.exports.Detector = Detector;

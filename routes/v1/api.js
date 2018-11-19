@@ -3,24 +3,35 @@ const core = require( './src/core' );
 const express = require( 'express' );
 const router = express.Router();
 
+const detectors = [];
 router.get( '/', function( req, res, next ) {
 	res.send( 'respond with a resource' );
 } );
 
 router.get( '/init', function( req, res, next ) {
-	const detectors = JSON.parse( fs.readFileSync( '../../credentials.json' ) );
-	for ( const detectorId in detectors ) {
-		core.createDetector(
-			detectorId,
-			detectors[ detectorId ].category,
-			detectors[ detectorId ].realTime,
-			detectors[ detectorId ].url,
-			detectors[ detectorId ].otherOptions,
-			null,
-			null,
-			null
+	const detectorsData = JSON.parse(
+		fs.readFileSync( './credentials.json' )
+	);
+	for ( const detectorId in detectorsData ) {
+		const callbacks = require( detectorsData[ detectorId ].callbacks );
+		detectors.push(
+			core.createDetector(
+				detectorId,
+				detectorsData[ detectorId ].category,
+				detectorsData[ detectorId ].realTime,
+				detectorsData[ detectorId ].url,
+				detectorsData[ detectorId ].otherOptions,
+				callbacks.initialize,
+				callbacks.extractEmotions,
+				callbacks.translateToPAD
+			)
 		);
 	}
+
+	for ( const det of detectors ) {
+		det.initialize();
+	}
+
 	res.status( 200 ).send( {
 		id: 1,
 		status: 'OK'

@@ -1,3 +1,5 @@
+const base = require( './detectors/detector' );
+
 /**
  *
  * @param {string} id - Name of the detector.
@@ -19,14 +21,23 @@ function createDetector(
 	initialize,
 	extractEmotions,
 	translateToPAD ) {
-	const newDetector = {};
-	Detector.call( newDetector, id, category, realTime, url, otherOptions );
-	newDetector.prototype = Object.create( Detector.prototype );
-	newDetector.prototype.initialize = initialize;
-	newDetector.prototype.extractEmotions = extractEmotions;
-	newDetector.prototype.translateToPAD = translateToPAD;
+	const newDetector = new base.Detector(
+		id, category, realTime, url, otherOptions );
+	newDetector.initialize = initialize;
+	newDetector.extractEmotions = extractEmotions;
+	newDetector.translateToPAD = translateToPAD;
 	return newDetector;
 }
 
+
+/*
+const a = createDetector( 'azure', 'face', false, 'wwww', {}, () => {
+	console.log( 'Initialize templeate' );
+}, () => {
+	console.log( 'Extract templeate' );
+}, () => {
+	console.log( 'Translate templeate' );
+} );
+a.initialize();
+*/
 module.exports.createDetector = createDetector;
-//createDetector( 'azure', 'face', false, 'wwww', () => {}, () => {} );
