@@ -22,6 +22,9 @@ module.exports = {
 		"space-before-function-paren": 0,
 		"array-bracket-spacing": 0,
 		"computed-property-spacing": 0,
-		"guard-for-in": 0
+		"guard-for-in": 0,
+		"max-len": [ "error", {
+			"code": 120
+		} ]
 	}
 };

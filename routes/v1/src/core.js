@@ -29,15 +29,4 @@ function createDetector(
 	return newDetector;
 }
 
-
-/*
-const a = createDetector( 'azure', 'face', false, 'wwww', {}, () => {
-	console.log( 'Initialize templeate' );
-}, () => {
-	console.log( 'Extract templeate' );
-}, () => {
-	console.log( 'Translate templeate' );
-} );
-a.initialize();
-*/
 module.exports.createDetector = createDetector;

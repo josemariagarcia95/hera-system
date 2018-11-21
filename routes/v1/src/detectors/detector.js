@@ -16,8 +16,11 @@ function Detector( id, category, realTime, url, otherOptions ) {
 	this.realTime = realTime;
 	this.url = url;
 	this.otherOptions = otherOptions;
-	console.log( 'Detector called' );
 }
+
+Detector.prototype.initialize = function() {
+	console.log( 'Initialize method in Detector class' );
+};
 
 /** @function analyse
  *  @param {Object} media - Media to analyse. This media will be sent
