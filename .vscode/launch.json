@@ -10,6 +10,12 @@
 			"program": "${workspaceFolder}\\routes\\v1\\src\\core"
 		},
 		{
+			"type": "node",
+			"request": "launch",
+			"name": "Iniciar curry",
+			"program": "${workspaceFolder}\\routes\\v1\\src\\curry"
+		},
+		{
 			"type": "npm",
 			"request": "launch",
 			"name": "Iniciar API",

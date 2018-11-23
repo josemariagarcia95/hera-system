@@ -1,5 +1,5 @@
 /**
- * Abstract Detector function. It defines the common prototype
+ * Detector constructor function. It defines the common prototype
  * for future detectors
  * @function Detector
  * @param {string} id - Id of the detector. This id would be use in
@@ -18,20 +18,35 @@ function Detector( id, category, realTime, url, otherOptions ) {
 	this.otherOptions = otherOptions;
 }
 
+/**
+ * Auxiliar method to log in and perform other initialization tasks.
+ * If you need to add new parameters to your Detector object, you can do it here.
+ * @function initialize
+ */
 Detector.prototype.initialize = function() {
 	console.log( 'Initialize method in Detector class' );
 };
 
-/** @function analyse
- *  @param {Object} media - Media to analyse. This media will be sent
- * to the Detector's API
+/**
+ * Send the media passed to the correspondent API
+ * @function extractEmotions
+ *  @param {string} media - Media to analyse. This media will be sent
+ * to the Detector's API. This string will be an absolute route/url pointing to where the media is stored.
+ * @param {Function} callback - This callback will be used to the extracted the returned data.
  */
-Detector.prototype.extractEmotions = function( media ) {
+Detector.prototype.extractEmotions = function( media, callback ) {
 	console.log( 'extractEmotions method in Detector class' );
 };
 
+/**
+ * Send the media passed to the correspondent API
+ * @function translateToPAD
+ *  @param {Object} results - Results from the API that will be translated to the PAD space
+ *  @return {Object} Results expressed in the PAD space
+ */
 Detector.prototype.translateToPAD = function( results ) {
 	console.log( 'Translate method in Detector class' );
+	return {};
 };
 
 module.exports.Detector = Detector;
