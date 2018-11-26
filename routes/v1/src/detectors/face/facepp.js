@@ -1,11 +1,12 @@
 const request = require( 'request' );
 const fs = require( 'fs' );
 
-module.exports.initialize = function() {
+module.exports.initialize = async function() {
 	console.log( this.id + ' Initialize template' );
+	return this.id + ' initialize method';
 };
 
-module.exports.extractEmotions = function( media, callback ) {
+module.exports.extractEmotions = function( media, callback = () => {} ) {
 	const formData = {
 		image_file: fs.createReadStream( media ),
 		api_key: this.otherOptions.api_key,
@@ -26,6 +27,7 @@ module.exports.extractEmotions = function( media, callback ) {
 		}
 		console.log( body );
 		if ( body ) {
+			this.addResults( body );
 			callback( body );
 		}
 		return body ? body : {};

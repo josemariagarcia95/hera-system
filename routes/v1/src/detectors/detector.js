@@ -16,6 +16,8 @@ function Detector( id, category, realTime, url, otherOptions ) {
 	this.realTime = realTime;
 	this.url = url;
 	this.otherOptions = otherOptions;
+	this.rawResults = [];
+	this.padResults = [];
 }
 
 /**
@@ -23,7 +25,7 @@ function Detector( id, category, realTime, url, otherOptions ) {
  * If you need to add new parameters to your Detector object, you can do it here.
  * @function initialize
  */
-Detector.prototype.initialize = function() {
+Detector.prototype.initialize = async function() {
 	console.log( 'Initialize method in Detector class' );
 };
 
@@ -31,10 +33,10 @@ Detector.prototype.initialize = function() {
  * Send the media passed to the correspondent API
  * @function extractEmotions
  *  @param {string} media - Media to analyse. This media will be sent
+ *  @param {Function} callback - Callback used to auxiliar tasks
  * to the Detector's API. This string will be an absolute route/url pointing to where the media is stored.
- * @param {Function} callback - This callback will be used to the extracted the returned data.
  */
-Detector.prototype.extractEmotions = function( media, callback ) {
+Detector.prototype.extractEmotions = function( media, callback = () => {} ) {
 	console.log( 'extractEmotions method in Detector class' );
 };
 
@@ -47,6 +49,12 @@ Detector.prototype.extractEmotions = function( media, callback ) {
 Detector.prototype.translateToPAD = function( results ) {
 	console.log( 'Translate method in Detector class' );
 	return {};
+};
+
+
+Detector.prototype.addResults = function( results ) {
+	this.rawResults.push( results );
+	this.padResults.push( this.translateToPAD( results ) );
 };
 
 module.exports.Detector = Detector;

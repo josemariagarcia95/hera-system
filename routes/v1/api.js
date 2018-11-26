@@ -30,7 +30,13 @@ router.get( '/init', function( req, res, next ) {
 	}
 
 	for ( const det of detectors ) {
-		det.initialize();
+		det.initialize().then( function( value ) {
+
+		}, function( value ) {
+			console.log( 'Something went horribly wrong ' );
+			console.error( '' );
+		} );
+		/*
 		if ( det.category == 'face' ) {
 			let data = {};
 			const t1 = present();
@@ -41,7 +47,7 @@ router.get( '/init', function( req, res, next ) {
 			};
 			det.extractEmotions( __dirname + '/src/detectors/' +
 				det.category + '/benchmark-files/photo1.jpg', pruebaCal );
-		}
+		}*/
 	}
 
 	res.status( 200 ).send( {

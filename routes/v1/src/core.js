@@ -29,4 +29,23 @@ function createDetector(
 	return newDetector;
 }
 
+/**
+ * Handles all the detectors, organized in categories under the same object
+ */
+function DetectorHandler() {
+	this.detectors = {};
+}
+
+/**
+ *
+ */
+function MergeStrategy() {
+	this.name = 'strategy';
+}
+
+MergeStrategy.prototype.process = function( results ) {
+	return {};
+};
+
 module.exports.createDetector = createDetector;
+module.exports.DetectorHandler = DetectorHandler;

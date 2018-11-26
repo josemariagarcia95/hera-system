@@ -1,10 +1,11 @@
 const request = require( 'request' );
 const fs = require( 'fs' );
 
-module.exports.initialize = function() {
+module.exports.initialize = async function() {
 	console.log( this.id + ' initialize method' );
+	return this.id + ' initialize method';
 };
-module.exports.extractEmotions = function( media ) {
+module.exports.extractEmotions = function( media, callback = () => {} ) {
 	const requestData = {
 		returnFaceId: 'true',
 		returnFaceLandmarks: 'false',
@@ -33,11 +34,13 @@ module.exports.extractEmotions = function( media ) {
 		//console.log( response );
 		if ( body.length !== 0 ) {
 			console.log( body[ 0 ].faceAttributes.emotion );
-			return body[ 0 ].faceAttributes.emotion;
+			this.addResults( body[ 0 ].faceAttributes.emotion );
+			callback( body );
 		}
 		return {};
 	} );
 };
+
 module.exports.translateToPAD = function() {
 	console.log( this.id + ' translateToPAD template' );
 };
