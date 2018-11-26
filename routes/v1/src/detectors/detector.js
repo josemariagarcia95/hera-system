@@ -57,4 +57,8 @@ Detector.prototype.addResults = function( results ) {
 	this.padResults.push( this.translateToPAD( results ) );
 };
 
+Detector.prototype.getResults = function( resultsType ) {
+	return this[ resultsType + 'Results' ];
+};
+
 module.exports.Detector = Detector;

@@ -9,6 +9,9 @@ router.get( '/', function( req, res, next ) {
 	res.send( 'respond with a resource' );
 } );
 
+// eslint-disable-next-line require-jsdoc
+async function a() {}
+
 router.get( '/init', function( req, res, next ) {
 	const detectorsData = JSON.parse(
 		fs.readFileSync( './credentials.json' )

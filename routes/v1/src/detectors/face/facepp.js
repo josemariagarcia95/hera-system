@@ -3,7 +3,7 @@ const fs = require( 'fs' );
 
 module.exports.initialize = async function() {
 	console.log( this.id + ' Initialize template' );
-	return this.id + ' initialize method';
+	return Promise.resolve( this.id + ' initialize method' );
 };
 
 module.exports.extractEmotions = function( media, callback = () => {} ) {

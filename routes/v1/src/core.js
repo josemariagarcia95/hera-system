@@ -37,6 +37,36 @@ function DetectorHandler() {
 }
 
 /**
+ * Add a new detector to the DetectorHandler object.
+ * @function addDetector
+ * @param {Object} detectorObj - Detector object.
+ */
+DetectorHandler.prototype.addDetector = function( detectorObj ) {
+	if ( this.detectors.hasOwnProperty( detectorObj.category ) ) {
+		this.detectors[ detectorObj.category ].push( detectorObj );
+	} else {
+		this.detectors[ detectorObj.category ] = [ detectorObj ];
+	}
+};
+
+DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
+	if ( this.detectors.hasOwnProperty( channel ) ) {
+		return Array.prototype.concat(
+			this.detectors[ channel ].map( function( detector ) {
+				const results = detector.getResults( resulsType );
+				return results ? results : [];
+			} ) );
+	} else {
+		return {
+			error: 'Non existing channel'
+		};
+	}
+}
+DetectorHandler.prototype.mergeResults = function( channel = 'all' ) {
+	//return process( this.getChannelResults( channel ) );
+};
+
+/**
  *
  */
 function MergeStrategy() {
