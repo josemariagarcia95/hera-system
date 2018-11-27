@@ -6,6 +6,12 @@
 	"configurations": [ {
 			"type": "node",
 			"request": "launch",
+			"name": "Iniciar beyond-verbal",
+			"program": "${workspaceFolder}\\routes\\v1\\src\\detectors\\voice\\beyond-verbal"
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "Iniciar core",
 			"program": "${workspaceFolder}\\routes\\v1\\src\\core"
 		},
