@@ -6,7 +6,7 @@ const querystring = require( 'querystring' );
 let accessToken = '';
 const body = {
 	grant_type: 'client_credentials',
-	apiKey: '**********************************************'
+	apiKey: '790f25eb-4fc1-4058-bc3b-7a700d84294b'
 };
 
 const options = {
@@ -51,12 +51,28 @@ request( options, function( error, response, body ) {
 			}
 			if ( body ) {
 				console.log( body );
+				recordingId = body.recordingId;
+				const newnewOptions = {
+					url: 'https://apiv5.beyondverbal.com/v5/recording/' + recordingId,
+					method: 'POST',
+					headers: {
+						'Authorization': 'Bearer ' + accessToken
+					},
+					body: fs.createReadStream( './benchmark-files/Anger_Dislike_Stress_3.wav' )
+				};
+				request( newnewOptions, function( error, response, body ) {
+					console.log( 'Third request - Results' );
+					if ( error ) {
+						console.log( error );
+						return error;
+					}
+					if ( body ) {
+						console.log( body );
+					}
+				} );
 			}
 		} );
-
-
 	}
-	return body ? body : {};
 } );
 
 
