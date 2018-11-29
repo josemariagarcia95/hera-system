@@ -24,8 +24,9 @@ module.exports = {
 		"computed-property-spacing": 0,
 		"guard-for-in": 0,
 		"max-len": [ "error", {
-			"code": 120,
+			"code": 130,
 			"ignoreComments": true
-		} ]
+		} ],
+		"prefer-spread": 0
 	}
 };

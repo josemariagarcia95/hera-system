@@ -14,6 +14,7 @@ function Detector( id, category, realTime, url, otherOptions ) {
 	this.id = id;
 	this.category = category;
 	this.realTime = realTime;
+	this.delay = 1000000000;
 	this.url = url;
 	this.otherOptions = otherOptions;
 	this.rawResults = [];
@@ -55,6 +56,11 @@ Detector.prototype.translateToPAD = function( results ) {
 Detector.prototype.addResults = function( results ) {
 	this.rawResults.push( results );
 	this.padResults.push( this.translateToPAD( results ) );
+};
+
+Detector.prototype.cleanResults = function() {
+	this.rawResults = [];
+	this.padResults = [];
 };
 
 Detector.prototype.getResults = function( resultsType ) {
