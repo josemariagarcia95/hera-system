@@ -47,20 +47,34 @@ router.get( '/init', function( req, res, next ) {
 
 router.post( '/setup', function( req, res, next ) {
 	const preferences = req.body;
-	const detectors = [];
-	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
+	let detectorsAffected = 0;
 	if ( preferences ) {
-
+		for ( const propFilter in preferences ) {
+			switch ( propFilter ) {
+				case 'type':
+					detectorsAffected += detectorHandler.quitCategory( preferences[ propFilter ] );
+					break;
+				case 'realTime':
+					detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
+					break;
+				case 'delay':
+					detectorsAffected += detectorHandler.filter( ( det ) => det.delay <= preferences[ propFilter ] );
+					break;
+				default:
+					break;
+			}
+		}
+		res.status( 200 ).send( {
+			status: 'OK',
+			detectors_affected: detectorsAffected
+		} );
 	} else {
-
+		res.status( 200 ).send( 'Preferences not set. Body request is empty' );
 	}
-	res.status( 200 ).send( 'Todo ok' );
 } );
 
 router.post( '/analyse', function( req, res, next ) {
-	const preferences = req.body;
-	const detectors = [];
-	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
+	const media = req.body;
 	if ( preferences ) {
 
 	} else {

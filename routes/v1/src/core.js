@@ -59,9 +59,47 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 				detectorObj.delay = mean( times );
 				detectorObj.realTime = detectorObj.delay < 2000;
 			}
-		}
-		detectorObj.extractEmotions( './' + detectorObj.category + '/benchmark-files/' + fileName );
+		};
+		detectorObj.extractEmotions( './' + detectorObj.category + '/benchmark-files/' + fileName, callback );
 	} );
+};
+
+/**
+ * Remove a whole category of detectors
+ * @function quitCategory
+ * @param {Array|string} types - String of a single type or array of several types.
+ * @return {number} Number of detectors deleted
+ */
+DetectorHandler.prototype.quitCategory = function( types ) {
+	let affected = 0;
+	//if types is a list of types, i.e. ['face', 'voice', 'physical', 'body']
+	if ( Array.isArray( types ) ) {
+		types.forEach( ( type ) => {
+			affected += this.detectors[ type ].length;
+			delete this.detectors[ type ];
+		} );
+		// if types is just a string, 'face'
+	} else if ( typeof( types ) ) {
+		affected += this.detectors[ types ].length;
+		delete this.detectors[ types ];
+	}
+	return affected;
+};
+
+/**
+ * Filter all detectors by criteria
+ * @function filter
+ * @param {Function} filteringFunction - String of a single type or array of several types.
+ * @return {number} Number of detectors filtered
+ */
+DetectorHandler.prototype.filter = function( filteringFunction ) {
+	let affected = 0;
+	for ( const category in this.detectors ) {
+		const oLength = this.detectors[ category ].length;
+		this.detectors[ category ] = this.detectors[ category ].filter( filteringFunction );
+		affected += oLength - this.detectors[ category ].length;
+	}
+	return affected;
 };
 
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
