@@ -64,6 +64,10 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	} );
 };
 
+DetectorHandler.prototype.analyseMedia = function( media ) {
+
+};
+
 /**
  * Remove a whole category of detectors
  * @function quitCategory

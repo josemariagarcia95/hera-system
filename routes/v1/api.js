@@ -119,4 +119,16 @@ router.get( '/results-raw', function( req, res, next ) {
 	res.status( 200 ).send( config );
 } );
 
+router.get( '/results-raw/:channel', function( req, res, next ) {
+	const preferences = req.body;
+	const detectors = [];
+	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
+	if ( preferences ) {
+
+	} else {
+
+	}
+	res.status( 200 ).send( 'Todo ok' );
+} );
+
 module.exports = router;
