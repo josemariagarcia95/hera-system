@@ -48,7 +48,8 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	} else {
 		this.detectors[ detectorObj.category ] = [ detectorObj ];
 	}
-	fs.readdirSync( __dirname + '/' + detectorObj.category + '/benchmark-files' ).forEach( function( fileName, index, array ) {
+	fs.readdirSync( __dirname + '\\detectors\\' + detectorObj.category +
+		'\\benchmark-files' ).forEach( function( fileName, index, array ) {
 		let startTime = present();
 		const times = [];
 		const callback = function( data ) {
@@ -57,10 +58,11 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			if ( index + 1 === array.length ) {
 				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
-				detectorObj.realTime = detectorObj.delay < 2000;
+				detectorObj.realTime = detectorObj.delay < 4000;
 			}
 		};
-		detectorObj.extractEmotions( './' + detectorObj.category + '/benchmark-files/' + fileName, callback );
+		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
+			'/benchmark-files/' + fileName, callback );
 	} );
 };
 

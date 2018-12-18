@@ -6,7 +6,7 @@ module.exports.initialize = async function() {
 	return Promise.resolve( this.id + ' initialize method' );
 };
 
-module.exports.extractEmotions = function( media, callback = () => {} ) {
+module.exports.extractEmotions = function( context, media, callback = () => {} ) {
 	const formData = {
 		image_file: fs.createReadStream( media ),
 		api_key: this.otherOptions.api_key,
@@ -27,7 +27,7 @@ module.exports.extractEmotions = function( media, callback = () => {} ) {
 		}
 		console.log( body );
 		if ( body ) {
-			this.addResults( body );
+			context.addResults( body );
 			callback( body );
 		}
 		return body ? body : {};

@@ -33,11 +33,12 @@ Detector.prototype.initialize = async function() {
 /**
  * Send the media passed to the correspondent API
  * @function extractEmotions
+ *  @param {Object} context - Context in which auxiliar functions will be called
  *  @param {string} media - Media to analyse. This media will be sent
  *  @param {Function} callback - Callback used to auxiliar tasks
  * to the Detector's API. This string will be an absolute route/url pointing to where the media is stored.
  */
-Detector.prototype.extractEmotions = function( media, callback = () => {} ) {
+Detector.prototype.extractEmotions = function( context, media, callback = () => {} ) {
 	console.log( 'extractEmotions method in Detector class' );
 };
 

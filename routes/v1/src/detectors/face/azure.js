@@ -5,7 +5,7 @@ module.exports.initialize = async function() {
 	console.log( this.id + ' initialize method' );
 	return Promise.resolve( this.id + ' initialize method' );
 };
-module.exports.extractEmotions = function( media, callback = () => {} ) {
+module.exports.extractEmotions = function( context, media, callback = () => {} ) {
 	const requestData = {
 		returnFaceId: 'true',
 		returnFaceLandmarks: 'false',
@@ -34,7 +34,7 @@ module.exports.extractEmotions = function( media, callback = () => {} ) {
 		//console.log( response );
 		if ( body.length !== 0 ) {
 			console.log( body[ 0 ].faceAttributes.emotion );
-			this.addResults( body[ 0 ].faceAttributes.emotion );
+			context.addResults( body[ 0 ].faceAttributes.emotion );
 			callback( body );
 		}
 		return {};
