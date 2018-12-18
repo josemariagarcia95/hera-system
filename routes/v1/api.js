@@ -52,7 +52,7 @@ router.post( '/setup', function( req, res, next ) {
 		for ( const propFilter in preferences ) {
 			switch ( propFilter ) {
 				case 'type':
-					detectorsAffected += detectorHandler.quitCategory( preferences[ propFilter ] );
+					detectorsAffected += detectorHandler.filter( ( det ) => det.category === preferences[ propFilter ] );
 					break;
 				case 'realTime':
 					detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
@@ -66,10 +66,11 @@ router.post( '/setup', function( req, res, next ) {
 		}
 		res.status( 200 ).send( {
 			status: 'OK',
-			detectors_affected: detectorsAffected
+			detectors_affected: detectorsAffected,
+			detectors_used: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		res.status( 200 ).send( 'Preferences not set. Body request is empty' );
+		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be useds' );
 	}
 } );
 

@@ -85,7 +85,7 @@ DetectorHandler.prototype.quitCategory = function( types ) {
 			delete this.detectors[ type ];
 		} );
 		// if types is just a string, 'face'
-	} else if ( typeof( types ) ) {
+	} else if ( typeof( types ) == 'string' ) {
 		affected += this.detectors[ types ].length;
 		delete this.detectors[ types ];
 	}
@@ -103,6 +103,9 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
 	for ( const category in this.detectors ) {
 		const oLength = this.detectors[ category ].length;
 		this.detectors[ category ] = this.detectors[ category ].filter( filteringFunction );
+		if ( this.detectors[ category ].length === 0 ) {
+			delete this.detectors[ category ];
+		}
 		affected += oLength - this.detectors[ category ].length;
 	}
 	return affected;
@@ -125,6 +128,11 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 DetectorHandler.prototype.getDetectors = function() {
 	return [].concat( ...Object.values( this.detectors ) );
 };
+
+DetectorHandler.prototype.lengthDetectors = function() {
+	return this.getDetectors().length;
+};
+
 
 DetectorHandler.prototype.mergeResults = function( channel = 'all' ) {
 	//return process( this.getChannelResults( channel ) );
