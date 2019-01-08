@@ -1,6 +1,8 @@
 const base = require( './detectors/detector' );
 const present = require( 'present' );
 const fs = require( 'fs' );
+
+const realTimeThreshold = 4000;
 /**
  *
  * @param {string} id - Name of the detector.
@@ -58,7 +60,8 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			if ( index + 1 === array.length ) {
 				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
-				detectorObj.realTime = detectorObj.delay < 4000;
+				detectorObj.realTime = detectorObj.delay < realTimeThreshold;
+				console.log( detectorObj );
 			}
 		};
 		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
@@ -93,9 +96,9 @@ DetectorHandler.prototype.quitCategory = function( types ) {
 };
 
 /**
- * Filter all detectors by criteria
+ * Filter all detectors by a certain criteria
  * @function filter
- * @param {Function} filteringFunction - String of a single type or array of several types.
+ * @param {Function} filteringFunction - Function to apply in a filter.
  * @return {number} Number of detectors filtered
  */
 DetectorHandler.prototype.filter = function( filteringFunction ) {
@@ -103,10 +106,10 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
 	for ( const category in this.detectors ) {
 		const oLength = this.detectors[ category ].length;
 		this.detectors[ category ] = this.detectors[ category ].filter( filteringFunction );
+		affected += oLength - this.detectors[ category ].length;
 		if ( this.detectors[ category ].length === 0 ) {
 			delete this.detectors[ category ];
 		}
-		affected += oLength - this.detectors[ category ].length;
 	}
 	return affected;
 };

@@ -46,13 +46,17 @@ router.get( '/init', function( req, res, next ) {
 } );
 
 router.post( '/setup', function( req, res, next ) {
+	console.log( 'Estoy en setup' );
 	const preferences = req.body;
+	console.log( preferences );
 	let detectorsAffected = 0;
 	if ( preferences ) {
 		for ( const propFilter in preferences ) {
 			switch ( propFilter ) {
 				case 'type':
-					detectorsAffected += detectorHandler.filter( ( det ) => det.category === preferences[ propFilter ] );
+					detectorsAffected += detectorHandler.filter(
+						( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
+					);
 					break;
 				case 'realTime':
 					detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
@@ -108,6 +112,8 @@ router.get( '/results/:channel', function( req, res, next ) {
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
+
+/*
 router.get( '/results-raw', function( req, res, next ) {
 	const preferences = req.body;
 	const detectors = [];
@@ -131,5 +137,5 @@ router.get( '/results-raw/:channel', function( req, res, next ) {
 	}
 	res.status( 200 ).send( 'Todo ok' );
 } );
-
+*/
 module.exports = router;
