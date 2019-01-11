@@ -6,13 +6,15 @@
  * HTTP request.
  * @param {string} category - Category of the detector. Values can be
  * 'face', 'voice','body', 'physio' and 'others'.
+ * @param {Array} media - Types of media the service can handle.
  * @param {boolean} realTime - Boolean indicating if the API works in realTime.
  * @param {string} url - Url to which the request will be sent.
  * @param {Object} otherOptions - Other options, such as API keys, and so on.
  */
-function Detector( id, category, realTime, url, otherOptions ) {
+function Detector( id, category, media, realTime, url, otherOptions ) {
 	this.id = id;
 	this.category = category;
+	this.media = media;
 	this.realTime = realTime;
 	this.delay = 1000000000;
 	this.url = url;

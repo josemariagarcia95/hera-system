@@ -7,6 +7,7 @@ const realTimeThreshold = 4000;
  *
  * @param {string} id - Name of the detector.
  * @param {string} category
+ * @param {Array} media
  * @param {boolean} realTime
  * @param {string} url
  * @param {Object} otherOptions
@@ -18,6 +19,7 @@ const realTimeThreshold = 4000;
 function createDetector(
 	id,
 	category,
+	media,
 	realTime,
 	url,
 	otherOptions,
@@ -25,7 +27,7 @@ function createDetector(
 	extractEmotions,
 	translateToPAD ) {
 	const newDetector = new base.Detector(
-		id, category, realTime, url, otherOptions );
+		id, category, media, realTime, url, otherOptions );
 	newDetector.initialize = initialize;
 	newDetector.extractEmotions = extractEmotions;
 	newDetector.translateToPAD = translateToPAD;

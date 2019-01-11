@@ -19,6 +19,7 @@ router.get( '/init', function( req, res, next ) {
 		const newDetector = core.createDetector(
 			detectorId,
 			detectorsData[ detectorId ].category,
+			detectorsData[ detectorId ].media,
 			detectorsData[ detectorId ].realTime,
 			detectorsData[ detectorId ].url,
 			detectorsData[ detectorId ].otherOptions,
