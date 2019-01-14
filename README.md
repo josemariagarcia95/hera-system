@@ -4,6 +4,7 @@ Two-level multimodal system to detect emotions.
 ## About the API
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
 
+See docs [here](./docs/v1/index.html)
 * `/init`
 	* `GET`. Reads configuration from `credentials.json `, initialize each emotion detector and performs a benchmarking task to test the state of the network and the detectors. See [DetectorHandler.prototype.addDetector](#DetectorHandler.prototype.addDetector)
 * `/setup`
