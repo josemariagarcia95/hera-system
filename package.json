@@ -12,6 +12,8 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "morgan": "~1.9.0",
+    "present": "^1.0.0",
+    "request": "^2.88.0",
     "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
