@@ -1,5 +1,5 @@
 # Tot system
-Two-level multimodal system to detect emotions.You can also read the doc [here](https://josegarciaclm95.github.io/tot-system/docs/v1/)
+Two-level multimodal system to detect emotions.
 
 You can read the code documentation [here](https://josegarciaclm95.github.io/tot-system/docs/v1/)
 

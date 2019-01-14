@@ -1,6 +1,33 @@
-const fs = require( 'fs' );
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: api.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: api.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const fs = require( 'fs' );
 const core = require( './src/core' );
-const request = require( 'request' );
 const express = require( 'express' );
 const router = express.Router();
 
@@ -37,7 +64,7 @@ router.get( '/init', function( req, res, next ) {
 		} );
 		res.status( 200 ).send( {
 			status: 'Detectors initialized',
-			detectorNumber: results.length
+			det_number: results.length
 		} );
 	}, function( results ) {
 		console.error( 'Something went horrible wrong' );
@@ -64,7 +91,7 @@ router.post( '/setup', function( req, res, next ) {
 					detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
 					break;
 				case 'delay':
-					detectorsAffected += detectorHandler.filter( ( det ) => det.delay <= preferences[ propFilter ] );
+					detectorsAffected += detectorHandler.filter( ( det ) => det.delay &lt;= preferences[ propFilter ] );
 					break;
 				default:
 					break;
@@ -72,52 +99,33 @@ router.post( '/setup', function( req, res, next ) {
 		}
 		res.status( 200 ).send( {
 			status: 'OK',
-			detectorsAffected: detectorsAffected,
-			detectorsUsed: detectorHandler.lengthDetectors()
+			detectors_affected: detectorsAffected,
+			detectors_used: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
+		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be useds' );
 	}
 } );
 
 /**
- * <strong>ENDPOINT.</strong><br/>
- * The <tt>/analyse</tt> endpoint allows us to request for the analysis of some media file.
- * The request will recieve up to 3 parameters: <br/>
- * <ul>
- * 	<li><tt>mediaType</tt>: Kind of media which will be sent. Options can be "image", "video", "sound" and "text".</li>
- * 	<li><tt>lookingFor</tt>: Feature we want to analyse. Options can be "face", "voice", "signal" and "body".</li>
- * 	<li><tt>mediaPath</tt>: Absolute path to the file which contains the media. This can be a local path or an Internet address.</li>
- * </ul>
+ * &lt;strong>ENDPOINT.&lt;/strong>
+ * The &lt;tt>/analyse&lt;/tt> endpoint allows us to request for the analysis of some media file.
+ * The request will recieve up to 3 parameters: &lt;br/>
+ * &lt;ul>
+ * 	&lt;li>&lt;tt>media_type&lt;/tt>: Kind of media which will be sent. Options can be "image", "video", "sound" and "text".&lt;/li>
+ * 	&lt;li>&lt;tt>looking_for&lt;/tt>: Feature we want to analyse. Options can be "face", "voice", "signal" and "body".&lt;/li>
+ * 	&lt;li>&lt;tt>route&lt;/tt>: Absolute route to the file which contains the media. This can be a local route or an Internet address.&lt;/li>
+ * &lt;/ul>
  * @function /analyse
  */
 router.post( '/analyse', function( req, res, next ) {
-	const mediaInfo = req.body;
-	if ( mediaInfo && !mediaInfo.mediaPath ) {
-		res.status( 400 ).send( 'The request contais no path to media file. "path" attribute is missing' );
+	const media = req.body;
+	if ( preferences ) {
+
+	} else {
+
 	}
-	//We check if the file is in the system
-	const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
-	//If it's not in the system, it must be in some remote server
-	if ( !fileIsLocal ) {
-		const options = {
-			url: mediaInfo.mediaPath,
-			method: 'HEAD'
-		};
-		request( options, function( error, response, body ) {
-			//if the remote request fails as well, then the given path is incorrect
-			if ( error ) {
-				res.status( 400 ).send( 'The media specified is available neither locally or remotely' );
-			}
-		} );
-	}
-	detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
-		.then( function( success ) {
-			res.status( 200 ).send( 'Analyse started.' );
-		} ).catch( function( error ) {
-			console.log( error );
-			res.status( 503 ).send( 'Detectors were not available/found' );
-		} );
+	res.status( 200 ).send( 'Todo ok' );
 } );
 
 router.get( '/results', function( req, res, next ) {
@@ -171,3 +179,26 @@ router.get( '/results-raw/:channel', function( req, res, next ) {
 } );
 */
 module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#/analyse">/analyse</a></li><li><a href="global.html#addDetector">addDetector</a></li><li><a href="global.html#createDetector">createDetector</a></li><li><a href="global.html#Detector">Detector</a></li><li><a href="global.html#DetectorHandler">DetectorHandler</a></li><li><a href="global.html#extractEmotions">extractEmotions</a></li><li><a href="global.html#filter">filter</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#MergeStrategy">MergeStrategy</a></li><li><a href="global.html#quitCategory">quitCategory</a></li><li><a href="global.html#translateToPAD">translateToPAD</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 14 2019 10:19:36 GMT+0100 (GMT+01:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
