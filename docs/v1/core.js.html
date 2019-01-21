@@ -31,17 +31,19 @@ const present = require( 'present' );
 const fs = require( 'fs' );
 
 const realTimeThreshold = 4000;
+
 /**
- *
+ * Initialises a detector using the arguments passed. Returns that new detector.
+ * @function createDetector
  * @param {string} id - Name of the detector.
- * @param {string} category
- * @param {Array} media
- * @param {boolean} realTime
- * @param {string} url
- * @param {Object} otherOptions
- * @param {Function} initialize
- * @param {Function} extractEmotions
- * @param {Function} translateToPAD
+ * @param {string} category - Name of the category. E.g. face, voice, etc.
+ * @param {Array} media - Type of media that can be processed. E.g. image, video, sound, etc.
+ * @param {boolean} realTime - The detector answers in real time.
+ * @param {string} url - API/Service URL.
+ * @param {Object} otherOptions - Object to save other customized options.
+ * @param {Function} initialize - Function to initiliaze the detector (sign into the service, request session token, etc.)
+ * @param {Function} extractEmotions - Function to analyse some media.
+ * @param {Function} translateToPAD - Function called with the results of the previous function.
  * @return {Object} New Detector object fully built
  */
 function createDetector(
@@ -64,6 +66,8 @@ function createDetector(
 
 /**
  * Handles all the detectors, organized in categories under the same object
+ * @constructs DetectorHandler
+ * Under each key in its &lt;tt>detectors&lt;/tt> attribute there is an array of &lt;tt>Detector&lt;/tt> objects
  */
 function DetectorHandler() {
 	this.detectors = {};
@@ -72,7 +76,9 @@ function DetectorHandler() {
 /**
  * Add a new detector to the DetectorHandler object.
  * @function addDetector
- * @param {Object} detectorObj - Detector object.
+ * @param {Object} detectorObj - Detector object. It is added unded the corresponding category.
+ * After adding it, the benchmarking process begins.
+ * This process also sets the &lt;tt>delay&lt;/tt> and &lt;tt>realTime&lt;/tt> attributes.
  */
 DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	if ( this.detectors.hasOwnProperty( detectorObj.category ) ) {
@@ -99,8 +105,32 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	} );
 };
 
-DetectorHandler.prototype.analyseMedia = function( media ) {
-
+/**
+ * Analyse the media passed as an argument looking for affective data.
+ * @function analyseMedia
+ * @param {string} mediaType - Type of media passed. E.g. image, video, sound or text.
+ * @param {Array} lookingFor - List of affective channels that must be analysed. E.g. face, voice, text, signal, etc.
+ * @param {string} mediaPath - Path to the media file, local or remote.
+ * @return {Promise} Promise with the number of detectors that could attend the request.
+ */
+DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaPath ) {
+	return new Promise( ( resolve, reject ) => {
+		const analysisRequested = 0;
+		for ( const category in this.detectors ) {
+			if ( lookingFor.indexOf( category ) !== -1 ) {
+				this.detectors[ category ].forEach( ( detector, index, detectorCategory ) => {
+					if ( detector.media.indexOf( mediaType ) !== -1 ) {
+						detector.extractEmotions( mediaPath, detector );
+						analysisRequested++;
+					}
+				} );
+				resolve( analysisRequested );
+			}
+		}
+		if ( analysisRequested === 0 ) {
+			reject( 'No analysis requested' );
+		}
+	} );
 };
 
 /**
@@ -144,6 +174,13 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
 	return affected;
 };
 
+/**
+ * Get results from a specific channel in a specific format
+ * @function getChannelResults
+ * @param {strign} channel - Name of the channel from which the results are requested.
+ * @param {strign} resulsType - Format desired for the results. E.g. pad or raw.
+ * @return {Array|string} Array with the results or a string with an error message.
+ */
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	if ( this.detectors.hasOwnProperty( channel ) ) {
 		return Array.prototype.concat(
@@ -158,10 +195,20 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	}
 };
 
+/**
+ * Return all the detectors in a single array
+ * @function getDetectors
+ * @return {Array} Array with all the detectors in DetectorHandler.
+ */
 DetectorHandler.prototype.getDetectors = function() {
 	return [].concat( ...Object.values( this.detectors ) );
 };
 
+/**
+ * Return total number of detectors
+ * @function lengthDetectors
+ * @return {number} Total number of detectors.
+ */
 DetectorHandler.prototype.lengthDetectors = function() {
 	return this.getDetectors().length;
 };
@@ -194,13 +241,13 @@ module.exports.DetectorHandler = DetectorHandler;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addDetector">addDetector</a></li><li><a href="global.html#createDetector">createDetector</a></li><li><a href="global.html#Detector">Detector</a></li><li><a href="global.html#DetectorHandler">DetectorHandler</a></li><li><a href="global.html#extractEmotions">extractEmotions</a></li><li><a href="global.html#filter">filter</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#MergeStrategy">MergeStrategy</a></li><li><a href="global.html#quitCategory">quitCategory</a></li><li><a href="global.html#translateToPAD">translateToPAD</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addDetector">addDetector</a></li><li><a href="global.html#analyseMedia">analyseMedia</a></li><li><a href="global.html#createDetector">createDetector</a></li><li><a href="global.html#Detector">Detector</a></li><li><a href="global.html#extractEmotions">extractEmotions</a></li><li><a href="global.html#filter">filter</a></li><li><a href="global.html#getChannelResults">getChannelResults</a></li><li><a href="global.html#getDetectors">getDetectors</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#lengthDetectors">lengthDetectors</a></li><li><a href="global.html#MergeStrategy">MergeStrategy</a></li><li><a href="global.html#quitCategory">quitCategory</a></li><li><a href="global.html#translateToPAD">translateToPAD</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 14 2019 10:01:25 GMT+0100 (GMT+01:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 21 2019 23:11:17 GMT+0100 (GMT+01:00)
 </footer>
 
 <script> prettyPrint(); </script>

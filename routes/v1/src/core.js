@@ -3,17 +3,19 @@ const present = require( 'present' );
 const fs = require( 'fs' );
 
 const realTimeThreshold = 4000;
+
 /**
- *
+ * Initialises a detector using the arguments passed. Returns that new detector.
+ * @function createDetector
  * @param {string} id - Name of the detector.
- * @param {string} category
- * @param {Array} media
- * @param {boolean} realTime
- * @param {string} url
- * @param {Object} otherOptions
- * @param {Function} initialize
- * @param {Function} extractEmotions
- * @param {Function} translateToPAD
+ * @param {string} category - Name of the category. E.g. face, voice, etc.
+ * @param {Array} media - Type of media that can be processed. E.g. image, video, sound, etc.
+ * @param {boolean} realTime - The detector answers in real time.
+ * @param {string} url - API/Service URL.
+ * @param {Object} otherOptions - Object to save other customized options.
+ * @param {Function} initialize - Function to initiliaze the detector (sign into the service, request session token, etc.)
+ * @param {Function} extractEmotions - Function to analyse some media.
+ * @param {Function} translateToPAD - Function called with the results of the previous function.
  * @return {Object} New Detector object fully built
  */
 function createDetector(
@@ -36,7 +38,7 @@ function createDetector(
 
 /**
  * Handles all the detectors, organized in categories under the same object
- * @constructs
+ * @constructs DetectorHandler
  * Under each key in its <tt>detectors</tt> attribute there is an array of <tt>Detector</tt> objects
  */
 function DetectorHandler() {
@@ -46,7 +48,9 @@ function DetectorHandler() {
 /**
  * Add a new detector to the DetectorHandler object.
  * @function addDetector
- * @param {Object} detectorObj - Detector object.
+ * @param {Object} detectorObj - Detector object. It is added unded the corresponding category.
+ * After adding it, the benchmarking process begins.
+ * This process also sets the <tt>delay</tt> and <tt>realTime</tt> attributes.
  */
 DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	if ( this.detectors.hasOwnProperty( detectorObj.category ) ) {
@@ -73,6 +77,14 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	} );
 };
 
+/**
+ * Analyse the media passed as an argument looking for affective data.
+ * @function analyseMedia
+ * @param {string} mediaType - Type of media passed. E.g. image, video, sound or text.
+ * @param {Array} lookingFor - List of affective channels that must be analysed. E.g. face, voice, text, signal, etc.
+ * @param {string} mediaPath - Path to the media file, local or remote.
+ * @return {Promise} Promise with the number of detectors that could attend the request.
+ */
 DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaPath ) {
 	return new Promise( ( resolve, reject ) => {
 		const analysisRequested = 0;
@@ -134,6 +146,13 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
 	return affected;
 };
 
+/**
+ * Get results from a specific channel in a specific format
+ * @function getChannelResults
+ * @param {strign} channel - Name of the channel from which the results are requested.
+ * @param {strign} resulsType - Format desired for the results. E.g. pad or raw.
+ * @return {Array|string} Array with the results or a string with an error message.
+ */
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	if ( this.detectors.hasOwnProperty( channel ) ) {
 		return Array.prototype.concat(
@@ -148,10 +167,20 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	}
 };
 
+/**
+ * Return all the detectors in a single array
+ * @function getDetectors
+ * @return {Array} Array with all the detectors in DetectorHandler.
+ */
 DetectorHandler.prototype.getDetectors = function() {
 	return [].concat( ...Object.values( this.detectors ) );
 };
 
+/**
+ * Return total number of detectors
+ * @function lengthDetectors
+ * @return {number} Total number of detectors.
+ */
 DetectorHandler.prototype.lengthDetectors = function() {
 	return this.getDetectors().length;
 };
