@@ -1,3 +1,7 @@
+/**
+ * Core module.
+ * @module Core
+ */
 const base = require( './detectors/detector' );
 const present = require( 'present' );
 const fs = require( 'fs' );
@@ -16,7 +20,7 @@ const realTimeThreshold = 4000;
  * @param {Function} initialize - Function to initiliaze the detector (sign into the service, request session token, etc.)
  * @param {Function} extractEmotions - Function to analyse some media.
  * @param {Function} translateToPAD - Function called with the results of the previous function.
- * @return {Object} New Detector object fully built
+ * @return {Detector} New Detector object fully built
  */
 function createDetector(
 	id,
@@ -48,6 +52,7 @@ function DetectorHandler() {
 /**
  * Add a new detector to the DetectorHandler object.
  * @function addDetector
+ * @memberof DetectorHandler
  * @param {Object} detectorObj - Detector object. It is added unded the corresponding category.
  * After adding it, the benchmarking process begins.
  * This process also sets the <tt>delay</tt> and <tt>realTime</tt> attributes.
@@ -80,10 +85,11 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 /**
  * Analyse the media passed as an argument looking for affective data.
  * @function analyseMedia
+ * @memberof DetectorHandler
  * @param {string} mediaType - Type of media passed. E.g. image, video, sound or text.
  * @param {Array} lookingFor - List of affective channels that must be analysed. E.g. face, voice, text, signal, etc.
  * @param {string} mediaPath - Path to the media file, local or remote.
- * @return {Promise} Promise with the number of detectors that could attend the request.
+ * @return {Promise<number>} Promise with the number of detectors that could attend the request.
  */
 DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaPath ) {
 	return new Promise( ( resolve, reject ) => {
@@ -108,6 +114,7 @@ DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaP
 /**
  * Remove a whole category of detectors
  * @function quitCategory
+ * @memberof DetectorHandler
  * @param {Array|string} types - String of a single type or array of several types.
  * @return {number} Number of detectors deleted
  */
@@ -130,6 +137,7 @@ DetectorHandler.prototype.quitCategory = function( types ) {
 /**
  * Filter all detectors by a certain criteria
  * @function filter
+ * @memberof DetectorHandler
  * @param {Function} filteringFunction - Function to apply in a filter.
  * @return {number} Number of detectors filtered
  */
@@ -149,6 +157,7 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
 /**
  * Get results from a specific channel in a specific format
  * @function getChannelResults
+ * @memberof DetectorHandler
  * @param {strign} channel - Name of the channel from which the results are requested.
  * @param {strign} resulsType - Format desired for the results. E.g. pad or raw.
  * @return {Array|string} Array with the results or a string with an error message.
@@ -170,6 +179,7 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 /**
  * Return all the detectors in a single array
  * @function getDetectors
+ * @memberof DetectorHandlers
  * @return {Array} Array with all the detectors in DetectorHandler.
  */
 DetectorHandler.prototype.getDetectors = function() {
@@ -179,6 +189,7 @@ DetectorHandler.prototype.getDetectors = function() {
 /**
  * Return total number of detectors
  * @function lengthDetectors
+ * @memberof DetectorHandler
  * @return {number} Total number of detectors.
  */
 DetectorHandler.prototype.lengthDetectors = function() {

@@ -1,3 +1,7 @@
+/**
+ * API module.
+ * @module API
+ */
 const fs = require( 'fs' );
 const core = require( './src/core' );
 const request = require( 'request' );
@@ -6,11 +10,19 @@ const router = express.Router();
 
 const detectorHandler = new core.DetectorHandler();
 
+
 router.get( '/', function( req, res, next ) {
 	res.send( 'respond with a resource' );
 } );
 
+/**
+ * <strong>ENDPOINT.</strong><br/>
+ * The <tt>/init</tt> endpoint allows us initialize the whole system.<br/>
+ * The request receives no parameters, reads the <tt>crediantials.json</tt> file and instantiates all the detectors set in it.
+ * @function /init
+ */
 router.get( '/init', function( req, res, next ) {
+	console.log( '****************************SETUP****************************' );
 	const promises = [];
 	const detectorsData = JSON.parse(
 		fs.readFileSync( './credentials.json' )
@@ -47,8 +59,21 @@ router.get( '/init', function( req, res, next ) {
 	} );
 } );
 
+/**
+ * <strong>ENDPOINT.</strong><br/>
+ * The <tt>/setup</tt> endpoint allows us to customize a little bit your set of detectores.
+ * The request will recieve up to 3 parameters, all of them optional: <br/>
+ * <ul>
+ * 	<li><tt>type</tt>: Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled.
+ * 	An empty array deteles every category.</li>
+ * 	<li><tt>realTime</tt>: Boolean which states if you want detectors which work in real time or not.</li>
+ * 	<li><tt>delay</tt>: Upper threshold of the delay attribute. The delay attribute is set in the /initialize endpoint and represents the average time that
+ * 	a certain detector needs to fulfil a request. Detectors whose delay attribute is bigger than the delay parameter will be deleted.</li>
+ * </ul>
+ * @function /setup
+ */
 router.post( '/setup', function( req, res, next ) {
-	console.log( 'Estoy en setup' );
+	console.log( '****************************SETUP****************************' );
 	const preferences = req.body;
 	console.log( preferences );
 	let detectorsAffected = 0;
@@ -92,6 +117,7 @@ router.post( '/setup', function( req, res, next ) {
  * @function /analyse
  */
 router.post( '/analyse', function( req, res, next ) {
+	console.log( '****************************ANALYSE****************************' );
 	const mediaInfo = req.body;
 	if ( mediaInfo && !mediaInfo.mediaPath ) {
 		res.status( 400 ).send( 'The request contais no path to media file. "path" attribute is missing' );
@@ -121,6 +147,7 @@ router.post( '/analyse', function( req, res, next ) {
 } );
 
 router.get( '/results', function( req, res, next ) {
+	console.log( '****************************RESULTS****************************' );
 	const preferences = req.body;
 	const detectors = [];
 	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
@@ -133,6 +160,7 @@ router.get( '/results', function( req, res, next ) {
 } );
 
 router.get( '/results/:channel', function( req, res, next ) {
+	console.log( '****************************RESULTS/CHANNEL****************************' );
 	const preferences = req.body;
 	const detectors = [];
 	const detectorsInfo = fs.readFileSync( '../../credentials.json' );

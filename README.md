@@ -1,9 +1,6 @@
 # Tot system
 Two-level multimodal system to detect emotions.
 
-You can read the code documentation [here](https://josegarciaclm95.github.io/tot-system/docs/v1/)
-
-
 ## About the API
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
 
@@ -11,7 +8,7 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 	* `GET`. Reads configuration from `credentials.json `, initialize each emotion detector and performs a benchmarking task to test the state of the network and the detectors. See [DetectorHandler.prototype.addDetector](#DetectorHandler.prototype.addDetector)
 * `/setup`
 	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). `/setup` receives, in the request body, up to 3 parameters.
-		* `type`: detector types array you want to keep. Detector categories contained in this array will be deleted.
+		* `type`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category.
 		* `realTime`: boolean attribute representing the `realTime` attribute. Only detectors with a matching value of it will be kept.
 		* `delay`: response time threshold. Detectors whose delay attribute is bigger than the one in the `/setup` request will be deleted. 
 * `/analyse`
@@ -47,7 +44,7 @@ The root of the request will be always `/api/vX/`, being `X` the number of the v
 So, after starting the service, we just have to make an `init` request.
 
 ```
-GET `http://localhost:3000/api/v1/init`
+GET http://localhost:3000/api/v1/init
 ```
 
 This method will read the `credentials.json` file, initialise each detector stated in that file and perform a benchmark task for each one. This task consists of, for each detector, analyse every file contained in its corresponding `benchmark-files`	and calculate an average response time, saved in the `delay` attribute of the detector.
@@ -57,9 +54,11 @@ At this point, the Tot system is ready to work. You're free to send requests to 
 Additionally, you could send a `/setup` request to filter the slowest detectors, for instance, or to change the type of detectors you want to use. 
 # Documentation
 
+You can read the code documentation [here](https://josegarciaclm95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
+
 ## `src/core.js`
 
-### createDetector
+### [createDetector]()
 
 ### DetectorHandler
 

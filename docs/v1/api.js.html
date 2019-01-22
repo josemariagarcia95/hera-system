@@ -26,18 +26,31 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>const fs = require( 'fs' );
+            <pre class="prettyprint source linenums"><code>/**
+ * API module.
+ * @module API
+ */
+const fs = require( 'fs' );
 const core = require( './src/core' );
+const request = require( 'request' );
 const express = require( 'express' );
 const router = express.Router();
 
 const detectorHandler = new core.DetectorHandler();
 
+
 router.get( '/', function( req, res, next ) {
 	res.send( 'respond with a resource' );
 } );
 
+/**
+ * &lt;strong>ENDPOINT.&lt;/strong>&lt;br/>
+ * The &lt;tt>/init&lt;/tt> endpoint allows us initialize the whole system.&lt;br/>
+ * The request receives no parameters, reads the &lt;tt>crediantials.json&lt;/tt> file and instantiates all the detectors set in it.
+ * @function /init
+ */
 router.get( '/init', function( req, res, next ) {
+	console.log( '****************************SETUP****************************' );
 	const promises = [];
 	const detectorsData = JSON.parse(
 		fs.readFileSync( './credentials.json' )
@@ -64,7 +77,7 @@ router.get( '/init', function( req, res, next ) {
 		} );
 		res.status( 200 ).send( {
 			status: 'Detectors initialized',
-			det_number: results.length
+			detectorNumber: results.length
 		} );
 	}, function( results ) {
 		console.error( 'Something went horrible wrong' );
@@ -74,8 +87,21 @@ router.get( '/init', function( req, res, next ) {
 	} );
 } );
 
+/**
+ * &lt;strong>ENDPOINT.&lt;/strong>&lt;br/>
+ * The &lt;tt>/setup&lt;/tt> endpoint allows us to customize a little bit your set of detectores.
+ * The request will recieve up to 3 parameters, all of them optional: &lt;br/>
+ * &lt;ul>
+ * 	&lt;li>&lt;tt>type&lt;/tt>: Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled.
+ * 	An empty array deteles every category.&lt;/li>
+ * 	&lt;li>&lt;tt>realTime&lt;/tt>: Boolean which states if you want detectors which work in real time or not.&lt;/li>
+ * 	&lt;li>&lt;tt>delay&lt;/tt>: Upper threshold of the delay attribute. The delay attribute is set in the /initialize endpoint and represents the average time that
+ * 	a certain detector needs to fulfil a request. Detectors whose delay attribute is bigger than the delay parameter will be deleted.&lt;/li>
+ * &lt;/ul>
+ * @function /setup
+ */
 router.post( '/setup', function( req, res, next ) {
-	console.log( 'Estoy en setup' );
+	console.log( '****************************SETUP****************************' );
 	const preferences = req.body;
 	console.log( preferences );
 	let detectorsAffected = 0;
@@ -99,36 +125,57 @@ router.post( '/setup', function( req, res, next ) {
 		}
 		res.status( 200 ).send( {
 			status: 'OK',
-			detectors_affected: detectorsAffected,
-			detectors_used: detectorHandler.lengthDetectors()
+			detectorsAffected: detectorsAffected,
+			detectorsUsed: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be useds' );
+		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
 	}
 } );
 
 /**
- * &lt;strong>ENDPOINT.&lt;/strong>
+ * &lt;strong>ENDPOINT.&lt;/strong>&lt;br/>
  * The &lt;tt>/analyse&lt;/tt> endpoint allows us to request for the analysis of some media file.
  * The request will recieve up to 3 parameters: &lt;br/>
  * &lt;ul>
- * 	&lt;li>&lt;tt>media_type&lt;/tt>: Kind of media which will be sent. Options can be "image", "video", "sound" and "text".&lt;/li>
- * 	&lt;li>&lt;tt>looking_for&lt;/tt>: Feature we want to analyse. Options can be "face", "voice", "signal" and "body".&lt;/li>
- * 	&lt;li>&lt;tt>route&lt;/tt>: Absolute route to the file which contains the media. This can be a local route or an Internet address.&lt;/li>
+ * 	&lt;li>&lt;tt>mediaType&lt;/tt>: Kind of media which will be sent. Options can be "image", "video", "sound" and "text".&lt;/li>
+ * 	&lt;li>&lt;tt>lookingFor&lt;/tt>: Feature we want to analyse. Options can be "face", "voice", "signal" and "body".&lt;/li>
+ * 	&lt;li>&lt;tt>mediaPath&lt;/tt>: Absolute path to the file which contains the media. This can be a local path or an Internet address.&lt;/li>
  * &lt;/ul>
  * @function /analyse
  */
 router.post( '/analyse', function( req, res, next ) {
-	const media = req.body;
-	if ( preferences ) {
-
-	} else {
-
+	console.log( '****************************ANALYSE****************************' );
+	const mediaInfo = req.body;
+	if ( mediaInfo &amp;&amp; !mediaInfo.mediaPath ) {
+		res.status( 400 ).send( 'The request contais no path to media file. "path" attribute is missing' );
 	}
-	res.status( 200 ).send( 'Todo ok' );
+	//We check if the file is in the system
+	const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
+	//If it's not in the system, it must be in some remote server
+	if ( !fileIsLocal ) {
+		const options = {
+			url: mediaInfo.mediaPath,
+			method: 'HEAD'
+		};
+		request( options, function( error, response, body ) {
+			//if the remote request fails as well, then the given path is incorrect
+			if ( error ) {
+				res.status( 400 ).send( 'The media specified is available neither locally or remotely' );
+			}
+		} );
+	}
+	detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
+		.then( function( success ) {
+			res.status( 200 ).send( 'Analyse started.' );
+		} ).catch( function( error ) {
+			console.log( error );
+			res.status( 503 ).send( 'Detectors were not available/found' );
+		} );
 } );
 
 router.get( '/results', function( req, res, next ) {
+	console.log( '****************************RESULTS****************************' );
 	const preferences = req.body;
 	const detectors = [];
 	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
@@ -141,6 +188,7 @@ router.get( '/results', function( req, res, next ) {
 } );
 
 router.get( '/results/:channel', function( req, res, next ) {
+	console.log( '****************************RESULTS/CHANNEL****************************' );
 	const preferences = req.body;
 	const detectors = [];
 	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
@@ -189,13 +237,13 @@ module.exports = router;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#/analyse">/analyse</a></li><li><a href="global.html#addDetector">addDetector</a></li><li><a href="global.html#createDetector">createDetector</a></li><li><a href="global.html#Detector">Detector</a></li><li><a href="global.html#DetectorHandler">DetectorHandler</a></li><li><a href="global.html#extractEmotions">extractEmotions</a></li><li><a href="global.html#filter">filter</a></li><li><a href="global.html#initialize">initialize</a></li><li><a href="global.html#MergeStrategy">MergeStrategy</a></li><li><a href="global.html#quitCategory">quitCategory</a></li><li><a href="global.html#translateToPAD">translateToPAD</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-API.html">API</a></li><li><a href="module-Core.html">Core</a></li><li><a href="module-Detector.html">Detector</a></li></ul><h3>Classes</h3><ul><li><a href="Detector.html">Detector</a></li><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 14 2019 10:19:36 GMT+0100 (GMT+01:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 22 2019 10:42:20 GMT+0100 (GMT+01:00)
 </footer>
 
 <script> prettyPrint(); </script>
