@@ -179,7 +179,7 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 /**
  * Return all the detectors in a single array
  * @function getDetectors
- * @memberof DetectorHandlers
+ * @memberof DetectorHandler
  * @return {Array} Array with all the detectors in DetectorHandler.
  */
 DetectorHandler.prototype.getDetectors = function() {

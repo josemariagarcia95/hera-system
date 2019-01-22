@@ -58,39 +58,39 @@ You can read the code documentation [here](https://josegarciaclm95.github.io/tot
 
 ## `src/core.js`
 
-### [createDetector]()
+### [createDetector](https://josegarciaclm95.github.io/tot-system/docs/v1/module-Core.html#.createDetector)
 
-### DetectorHandler
+### [DetectorHandler](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html)
 
-#### DetectorHandler.prototype.addDetector
+#### [DetectorHandler.prototype.addDetector](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.addDetector)
 
-#### DetectorHandler.prototype.analyseMedia
+#### [DetectorHandler.prototype.analyseMedia](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.analyseMedia)
 
-#### DetectorHandler.prototype.quitCategory
+#### [DetectorHandler.prototype.quitCategory](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.quitCategory)
 
-#### DetectorHandler.prototype.filter
+#### [DetectorHandler.prototype.filter](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.filter)
 
-#### DetectorHandler.prototype.getChannelResults
+#### [DetectorHandler.prototype.getChannelResults](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelResults)
 
-#### DetectorHandler.prototype.getDetectors
+#### [DetectorHandler.prototype.getDetectors](https://josegarciaclm95.github.io/tot-system/docs/v1/DetectorHandler.html#.getDetectors)
 
-#### DetectorHandler.prototype.mergeResults
+#### [DetectorHandler.prototype.mergeResults]()
 
 ## `src/detectors/detector.js`
 
-### Detector
+### [Detector](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html)
 
-#### Detector.prototype.initialize
+#### [Detector.prototype.initialize](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.initialize)
 
-#### Detector.prototype.extractEmotions
+#### [Detector.prototype.extractEmotions](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.extractEmotions)
 
-#### Detector.prototype.translateToPAD
+#### [Detector.prototype.translateToPAD](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.translateToPAD)
 
-#### Detector.prototype.addResults
+#### [Detector.prototype.addResults](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.addResults)
 
-#### Detector.prototype.cleanResults
+#### [Detector.prototype.cleanResults](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.cleanResults)
 
-#### Detector.prototype.getResults
+#### [Detector.prototype.getResults](https://josegarciaclm95.github.io/tot-system/docs/v1/Detector.html#.getResults)
 
 ## `src/detectors/channel-example`
 
