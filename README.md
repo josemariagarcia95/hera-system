@@ -54,7 +54,7 @@ At this point, the Tot system is ready to work. You're free to send requests to 
 Additionally, you could send a `/setup` request to filter the slowest detectors, for instance, or to change the type of detectors you want to use. 
 # Documentation
 
-You can read the code documentation [here](https://josegarciaclm95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
+You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
 
 ## `src/core.js`
 
