@@ -93,12 +93,12 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
  */
 DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaPath ) {
 	return new Promise( ( resolve, reject ) => {
-		const analysisRequested = 0;
+		let analysisRequested = 0;
 		for ( const category in this.detectors ) {
 			if ( lookingFor.indexOf( category ) !== -1 ) {
 				this.detectors[ category ].forEach( ( detector, index, detectorCategory ) => {
 					if ( detector.media.indexOf( mediaType ) !== -1 ) {
-						detector.extractEmotions( mediaPath, detector );
+						detector.extractEmotions( detector, mediaPath );
 						analysisRequested++;
 					}
 				} );
@@ -158,8 +158,8 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
  * Get results from a specific channel in a specific format
  * @function getChannelResults
  * @memberof DetectorHandler
- * @param {strign} channel - Name of the channel from which the results are requested.
- * @param {strign} resulsType - Format desired for the results. E.g. pad or raw.
+ * @param {string} channel - Name of the channel from which the results are requested.
+ * @param {string} resulsType - Format desired for the results. E.g. pad or raw.
  * @return {Array|string} Array with the results or a string with an error message.
  */
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
