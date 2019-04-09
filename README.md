@@ -1,4 +1,4 @@
-# Tot system
+# ![logo](/logo/tot-64.png) Tot system
 Two-level multimodal system to detect emotions.
 
 ## About the API
