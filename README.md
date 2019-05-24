@@ -1,6 +1,31 @@
 # ![logo](/logo/tot-64.png) Tot system
 Two-level multimodal system to detect emotions.
 
+## Lanching the API
+Lanching the API is quite simple. Once you've downloaded the repository, just run a
+
+```
+npm install
+```
+to install the node modules required and then a 
+```
+npm start
+```
+to start the API. As a express app, it runs on port 3000, but you can change this easily at the `www` file in `/bin/`. 
+The root of the request will be always `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
+
+So, after starting the service, we just have to make an `init` request. **The API does not perform any action by just starting it up**. The `/init` endpoint needs to be called in order to actually start any operation.
+
+```
+GET http://localhost:3000/api/v1/init
+```
+
+This method will read the `credentials.json` file, initialise each detector stated in that file and perform a benchmark task for each one. This task consists of, for each detector, analyse every file contained in its corresponding `benchmark-files`	and calculate an average response time, saved in the `delay` attribute of the detector.
+
+At this point, the Tot system is ready to work. You're free to send requests to the `/analyse` and `/results` endpoints.
+
+Additionally, you could send a `/setup` request to filter the slowest detectors, for instance, or to change the type of detectors you want to use. 
+
 ## About the API
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
 
@@ -27,31 +52,7 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 * `/results-raw/:channel`. 
   *  `GET`. As in `/results-raw`, but just for one channel.
 
-## Lanching the API
 
-Lanching the API is quite simple. Once you've downloaded the repository, just run a
-
-```
-npm install
-```
-to install the node modules required and then a 
-```
-npm start
-```
-to start the API. As a express app, it runs on port 3000, but you can change this easily at the `www` file in `/bin/`. 
-The root of the request will be always `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
-
-So, after starting the service, we just have to make an `init` request.
-
-```
-GET http://localhost:3000/api/v1/init
-```
-
-This method will read the `credentials.json` file, initialise each detector stated in that file and perform a benchmark task for each one. This task consists of, for each detector, analyse every file contained in its corresponding `benchmark-files`	and calculate an average response time, saved in the `delay` attribute of the detector.
-
-At this point, the Tot system is ready to work. You're free to send requests to the `/analyse` and `/results` endpoints.
-
-Additionally, you could send a `/setup` request to filter the slowest detectors, for instance, or to change the type of detectors you want to use. 
 # Documentation
 
 You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.

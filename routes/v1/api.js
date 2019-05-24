@@ -22,7 +22,7 @@ router.get( '/', function( req, res, next ) {
  * @function /init
  */
 router.get( '/init', function( req, res, next ) {
-	console.log( '****************************SETUP****************************' );
+	console.log( '****************************INIT****************************' );
 	const promises = [];
 	const detectorsData = JSON.parse(
 		fs.readFileSync( './credentials.json' )

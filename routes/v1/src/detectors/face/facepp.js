@@ -25,12 +25,11 @@ module.exports.extractEmotions = function( context, media, callback = () => {} )
 			console.log( error );
 			return error;
 		}
-		console.log( body );
 		if ( body ) {
-			context.addResults( body );
-			callback( body );
+			const results = JSON.parse( body )[ 'faces' ][ 0 ][ 'attributes' ][ 'emotion' ];
+			context.addResults( results );
+			callback( results );
 		}
-		return body ? body : {};
 	} );
 };
 module.exports.translateToPAD = function() {
