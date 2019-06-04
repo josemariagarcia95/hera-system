@@ -74,9 +74,10 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
 				detectorObj.realTime = detectorObj.delay < realTimeThreshold;
-				console.log( detectorObj );
 			}
 		};
+		console.log( __dirname + '\\detectors\\' + detectorObj.category +
+			'/benchmark-files/' + fileName );
 		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
 			'/benchmark-files/' + fileName, callback );
 	} );

@@ -32,6 +32,14 @@ module.exports.extractEmotions = function( context, media, callback = () => {} )
 		}
 	} );
 };
-module.exports.translateToPAD = function() {
-	console.log( this.id + ' translateToPAD template' );
+module.exports.translateToPAD = function( results ) {
+	console.log( 'Método en ' + this.id + 'js' );
+	console.log( results );
+	return [
+		results[ 'happiness' ] + 0.4 * results[ 'disgust' ] + 0.2 * results[ 'sadness' ] +
+		0.1 * results[ 'anger' ] + 0.3 * results[ 'fear' ],
+		0.7 * results[ 'sadness' ] + 0.3 * results[ 'disgust' ] + 0.3 * results[ 'surprise' ] +
+		0.3 * results[ 'anger' ] + 0.2 * results[ 'fear' ] + 0.2 * results[ 'happiness' ],
+		0.7 * results[ 'fear' ] + 0.3 * results[ 'disgust' ] + 0.7 * results[ 'anger' ] + 0.3 * results[ 'happiness' ]
+	];
 };
