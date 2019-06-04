@@ -8,12 +8,15 @@ module.exports.initialize = async function() {
 
 module.exports.extractEmotions = function( context, media, callback = () => {} ) {
 	const formData = {
-		image_file: fs.createReadStream( media ),
 		api_key: this.otherOptions.api_key,
 		api_secret: this.otherOptions.api_secret,
 		return_attributes: 'emotion'
 	};
-
+	if ( fs.existsSync( media ) ) {
+		formData.image_file = fs.createReadStream( media );
+	} else {
+		formData.image_url = media;
+	}
 	const options = {
 		url: 'https://api-us.faceplusplus.com/facepp/v3/detect',
 		method: 'POST',

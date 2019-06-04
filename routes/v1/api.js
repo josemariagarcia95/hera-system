@@ -77,7 +77,7 @@ router.post( '/setup', function( req, res, next ) {
 	const preferences = req.body;
 	console.log( preferences );
 	let detectorsAffected = 0;
-	if ( preferences ) {
+	if ( Object.keys( preferences ).length !== 0 ) {
 		for ( const propFilter in preferences ) {
 			switch ( propFilter ) {
 				case 'type':
@@ -120,30 +120,35 @@ router.post( '/analyse', function( req, res, next ) {
 	console.log( '****************************ANALYSE****************************' );
 	const mediaInfo = req.body;
 	if ( mediaInfo && !mediaInfo.mediaPath ) {
-		res.status( 400 ).send( 'The request contais no path to media file. "path" attribute is missing' );
-	}
-	//We check if the file is in the system
-	const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
-	//If it's not in the system, it must be in some remote server
-	if ( !fileIsLocal ) {
-		const options = {
-			url: mediaInfo.mediaPath,
-			method: 'HEAD'
-		};
-		request( options, function( error, response, body ) {
-			//if the remote request fails as well, then the given path is incorrect
+		res.status( 400 ).send( 'The request contais no path to media file. "mediaPath" attribute is missing' );
+	} else {
+		const analyseMedia = function( error, response, body ) {
 			if ( error ) {
-				res.status( 400 ).send( 'The media specified is available neither locally or remotely' );
+				res.status( 400 ).send( 'The media specified is not available either remotely or locally' );
+			} else {
+				detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
+					.then( function( success ) {
+						res.status( 200 ).send( 'Analyse started.' );
+					} ).catch( function( error ) {
+						console.log( error );
+						res.status( 503 ).send( 'Detectors were not available/found' );
+					} );
 			}
-		} );
+		};
+		const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
+		//We perform a HEAD request to check the file existence if the file is not local
+		if ( !fileIsLocal ) {
+			const options = {
+				url: mediaInfo.mediaPath,
+				method: 'HEAD'
+			};
+			request( options, analyseMedia );
+		} else {
+			analyseMedia();
+		}
 	}
-	detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
-		.then( function( success ) {
-			res.status( 200 ).send( 'Analyse started.' );
-		} ).catch( function( error ) {
-			console.log( error );
-			res.status( 503 ).send( 'Detectors were not available/found' );
-		} );
+	//res.status( 400 ).send( 'Something went horribly wrong' );
+	//We check if the file is in the system
 } );
 
 router.get( '/results', function( req, res, next ) {
