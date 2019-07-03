@@ -1,5 +1,4 @@
 const request = require( 'request' );
-const fs = require( 'fs' );
 
 module.exports.initialize = async function() {
 	console.log( this.id + ' initialize method' );

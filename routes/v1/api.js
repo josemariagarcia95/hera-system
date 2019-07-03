@@ -101,7 +101,7 @@ router.post( '/setup', function( req, res, next ) {
 			detectorsUsed: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
+		res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
 	}
 } );
 
@@ -164,7 +164,7 @@ router.get( '/results', function( req, res, next ) {
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
-router.get( '/results/:channel', function( req, res, next ) {
+router.get( '/results/:channel/:type', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL****************************' );
 	const preferences = req.body;
 	const detectors = [];
@@ -177,6 +177,29 @@ router.get( '/results/:channel', function( req, res, next ) {
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
+router.get( '/results/:channel/:detector/:type', function( req, res, next ) {
+	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
+	const params = [
+		[ 'channel', req.params.channel ],
+		[ 'detector', req.params.detector ],
+		[ 'type', req.params.type ]
+	].filter( ( v ) => v[ 1 ] === void( 0 ) );
+	if ( params.length !== 0 ) {
+		res.status( 400 ).send( 'Missing parameters:  ' + params.map( ( v ) => v[ 0 ] + ': ' + v[ 1 ] ) );
+	}
+	/*
+	if ( channelName === void( 0 ) && detectorName === void( 0 ) && type === void( 0 ) ) {
+		res.status( 400 ).send( `No channel, nor detector nor results type specified. 
+			Please indicate these data respecting the format /channel/detector-name/type` );
+	} else if ( channelName === void( 0 ) && detectorName === void( 0 ) ) {
+		res.status( 400 ).send( `No channel nor detector specified. 
+			Please indicate these data respecting the format /channel/detector-name/type` );
+	} else if (channelName === void( 0 ) && detectorName === void( 0 ) && type === void( 0 )) {
+
+	}
+	*/
+	res.status( 200 ).send( 'Todo ok' );
+} );
 
 /*
 router.get( '/results-raw', function( req, res, next ) {

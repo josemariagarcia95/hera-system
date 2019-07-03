@@ -74,6 +74,7 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
 				detectorObj.realTime = detectorObj.delay < realTimeThreshold;
+				detectorObj.cleanResults();
 			}
 		};
 		console.log( __dirname + '\\detectors\\' + detectorObj.category +
@@ -103,6 +104,7 @@ DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaP
 						analysisRequested++;
 					}
 				} );
+				console.log( analysisRequested );
 				resolve( analysisRequested );
 			}
 		}
