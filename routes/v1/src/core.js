@@ -4,6 +4,7 @@
  */
 const base = require( './detectors/detector' );
 const present = require( 'present' );
+const mean = require( 'operations' ).mean;
 const fs = require( 'fs' );
 
 const realTimeThreshold = 4000;
@@ -71,7 +72,6 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			times.push( present() - startTime );
 			startTime = present();
 			if ( index + 1 === array.length ) {
-				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
 				detectorObj.realTime = detectorObj.delay < realTimeThreshold;
 				detectorObj.cleanResults();
@@ -163,15 +163,16 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
  * @memberof DetectorHandler
  * @param {string} channel - Name of the channel from which the results are requested.
  * @param {string} resulsType - Format desired for the results. E.g. pad or raw.
- * @return {Array|string} Array with the results or a string with an error message.
+ * @return {Array|Object} Array with the results or a object with a string holding the error message.
  */
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	if ( this.detectors.hasOwnProperty( channel ) ) {
-		return Array.prototype.concat(
+		return [
 			this.detectors[ channel ].map( function( detector ) {
 				const results = detector.getResults( resulsType );
 				return results ? results : [];
-			} ) );
+			} )
+		];
 	} else {
 		return {
 			error: 'Non existing channel'
@@ -199,9 +200,18 @@ DetectorHandler.prototype.lengthDetectors = function() {
 	return this.getDetectors().length;
 };
 
+/**
+ * Return array of channels
+ * @return {Array} Array of channels
+ */
+DetectorHandler.prototype.getChannels = function() {
+	return Object.keys( this.detectors );
+}
 
 DetectorHandler.prototype.mergeResults = function( channel = 'all' ) {
-	//return process( this.getChannelResults( channel ) );
+	if ( channel === 'all' ) {
+		const channels = this.getChannels
+	}
 };
 
 /**

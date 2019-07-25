@@ -151,17 +151,12 @@ router.post( '/analyse', function( req, res, next ) {
 	//We check if the file is in the system
 } );
 
-router.get( '/results', function( req, res, next ) {
+router.post( '/results', function( req, res, next ) {
 	console.log( '****************************RESULTS****************************' );
-	const preferences = req.body;
-	const detectors = [];
-	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
-	if ( preferences ) {
-
-	} else {
-
-	}
-	res.status( 200 ).send( 'Todo ok' );
+	const localStrategy = req.body.localStrategy;
+	const globalStrategy = req.body.globalStrategy;
+	const mergedResults = detectorHandler.mergeResults( localStrategy, globalStrategy );
+	res.status( 200 ).send( mergedResults );
 } );
 
 router.get( '/results/:channel/:type', function( req, res, next ) {
@@ -177,27 +172,10 @@ router.get( '/results/:channel/:type', function( req, res, next ) {
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
-router.get( '/results/:channel/:detector/:type', function( req, res, next ) {
+router.get( '/results/:channel/:detector', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
-	const params = [
-		[ 'channel', req.params.channel ],
-		[ 'detector', req.params.detector ],
-		[ 'type', req.params.type ]
-	].filter( ( v ) => v[ 1 ] === void( 0 ) );
-	if ( params.length !== 0 ) {
-		res.status( 400 ).send( 'Missing parameters:  ' + params.map( ( v ) => v[ 0 ] + ': ' + v[ 1 ] ) );
-	}
-	/*
-	if ( channelName === void( 0 ) && detectorName === void( 0 ) && type === void( 0 ) ) {
-		res.status( 400 ).send( `No channel, nor detector nor results type specified. 
-			Please indicate these data respecting the format /channel/detector-name/type` );
-	} else if ( channelName === void( 0 ) && detectorName === void( 0 ) ) {
-		res.status( 400 ).send( `No channel nor detector specified. 
-			Please indicate these data respecting the format /channel/detector-name/type` );
-	} else if (channelName === void( 0 ) && detectorName === void( 0 ) && type === void( 0 )) {
-
-	}
-	*/
+	if ( req.params.channel === void( 0 ) )
+		const detector = detectorHandler.getDetectorFromChannel();
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
