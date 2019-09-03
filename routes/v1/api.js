@@ -79,6 +79,8 @@ router.post( '/setup', function( req, res, next ) {
 	let detectorsAffected = 0;
 	if ( Object.keys( preferences ).length !== 0 ) {
 		for ( const propFilter in preferences ) {
+			//We use the filter method from DetectorHandler to filter any detector on every channel
+			//that doesn't satisfy the requirements from the request's body
 			switch ( propFilter ) {
 				case 'type':
 					detectorsAffected += detectorHandler.filter(
@@ -153,6 +155,7 @@ router.post( '/analyse', function( req, res, next ) {
 
 router.post( '/results', function( req, res, next ) {
 	console.log( '****************************RESULTS****************************' );
+	console.log( req.body );
 	const localStrategy = req.body.localStrategy;
 	const globalStrategy = req.body.globalStrategy;
 	const mergedResults = detectorHandler.mergeResults( localStrategy, globalStrategy );
@@ -174,8 +177,9 @@ router.get( '/results/:channel/:type', function( req, res, next ) {
 
 router.get( '/results/:channel/:detector', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
-	if ( req.params.channel === void( 0 ) )
+	if ( req.params.channel === void( 0 ) ) {
 		const detector = detectorHandler.getDetectorFromChannel();
+	}
 	res.status( 200 ).send( 'Todo ok' );
 } );
 

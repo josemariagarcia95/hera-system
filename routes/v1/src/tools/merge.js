@@ -1,4 +1,4 @@
-const mean = require( 'operations' ).mean;
+const mean = require( './operations' ).mean;
 const strategies = {
 	default: function( tripletsArray ) {
 		const pleasure = tripletsArray.forEach( ( element ) => {
@@ -19,6 +19,9 @@ module.exports.getMergingDataStrategy = function( strategyName ) {
 	switch ( strategyName ) {
 		case 'case1':
 			strategy = strategies.case1;
+			break;
+		default:
+			strategy = strategies.default;
 			break;
 	}
 	return strategy;

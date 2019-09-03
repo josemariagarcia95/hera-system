@@ -1,11 +1,16 @@
+/* eslint-disable prefer-rest-params */
 /**
  * Core module.
  * @module Core
  */
 const base = require( './detectors/detector' );
 const present = require( 'present' );
-const mean = require( 'operations' ).mean;
+const mean = require( './tools/operations' ).mean;
 const fs = require( 'fs' );
+//The merge.js file contains all the merging strategies
+//We'll select this strategies using this function
+const getMergingDataStrategy = require( './tools/merge' ).getMergingDataStrategy;
+
 
 const realTimeThreshold = 4000;
 
@@ -208,10 +213,20 @@ DetectorHandler.prototype.getChannels = function() {
 	return Object.keys( this.detectors );
 }
 
-DetectorHandler.prototype.mergeResults = function( channel = 'all' ) {
+DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
+	console.log( args );
+	//TODO
+	let channelsToMerge = undefined;
 	if ( channel === 'all' ) {
-		const channels = this.getChannels
+		//channel = 'all'
+		//sacamos todos los canales a channelsToMerge
+		//const channels = this.getChannels
+	} else {
+		channelsToMerge = channel;
 	}
+	channelResults = this.getChannels( channel ).map( function( elem, index ) {
+		elem.applyStrategy( localStrategy );
+	} );
 };
 
 /**
