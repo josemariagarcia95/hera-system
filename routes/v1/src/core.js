@@ -247,7 +247,6 @@ DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
 };
 
 DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
-	console.log( args );
 	let channelsToMerge = undefined;
 	if ( channel === 'all' ) {
 		//Return all available channels
@@ -255,15 +254,19 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 	} else {
 		channelsToMerge = channel;
 	}
+	//Map the array of channel names: ['face', 'voice', 'other', ...]
+	//so every detector in every channel (contained in the array)
+	//aggregates its results in just one triplet
 	const channelMergedResults = channelsToMerge.map( ( channelName ) => {
+		//Get the detectors of each channel
 		const detectors = this.getChannelDetectors( channelName );
-		//Array of triplets, one per detector
+		//Each detector applies the strategy to his own result
+		//We get an array of triplets per detector
 		const aggregatedDetectorResults = detectors.map( ( det ) => det.applyStrategy( localStrategy ) );
 		return applyStrategy( localStrategy, aggregatedDetectorResults );
 	} );
-	channelResults = this.getChannelDetectors( channelsToMerge ).map( function( elem, index ) {
-		elem.applyStrategy( localStrategy );
-	} );
+	//we apply the global strategy to these locally aggregated data
+	return applyStrategy( globalStrategy, channelMergedResults );
 };
 
 /**
