@@ -9,7 +9,7 @@ const mean = require( './tools/operations' ).mean;
 const fs = require( 'fs' );
 //The merge.js file contains all the merging strategies
 //We'll select this strategies using this function
-const getMergingDataStrategy = require( './tools/merge' ).getMergingDataStrategy;
+const applyStrategy = require( './tools/merge' ).applyStrategy;
 
 
 const realTimeThreshold = 4000;
@@ -209,22 +209,59 @@ DetectorHandler.prototype.lengthDetectors = function() {
  * Return array of channels
  * @return {Array} Array of channels
  */
-DetectorHandler.prototype.getChannels = function() {
+DetectorHandler.prototype.getChannelsKeys = function() {
 	return Object.keys( this.detectors );
-}
+};
+
+/**
+ * Return array of channels
+ * @param {Array} channelNames - Array of strings of channel names.
+ * @return {Array.<Detector>} Array of channels (being a channel an array of Detector)
+ */
+DetectorHandler.prototype.getChannels = function( channelNames ) {
+	if ( channelNames.length === 0 ) {
+		return [];
+	} else {
+		const channelArray = channelNames.map( ( channelName ) => {
+			if ( this.detectors.hasOwnProperty( channelName ) ) {
+				return this.getChannelResults( channelName, 'pad' );
+			} else {
+				return [];
+			}
+		} );
+		return channelArray;
+	}
+};
+
+/**
+ * Return detectors of a channel
+ * @param {String} channelName - Name of a channel.
+ * @return {Array.<Detector>} Array of channels (being a channel an array of Detector)
+ */
+DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
+	if ( this.detectors.hasOwnProperty( channelName ) ) {
+		return this.detectors[ channelName ];
+	} else {
+		return [];
+	}
+};
 
 DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
 	console.log( args );
-	//TODO
 	let channelsToMerge = undefined;
 	if ( channel === 'all' ) {
-		//channel = 'all'
-		//sacamos todos los canales a channelsToMerge
-		//const channels = this.getChannels
+		//Return all available channels
+		channelsToMerge = this.getChannelsKeys();
 	} else {
 		channelsToMerge = channel;
 	}
-	channelResults = this.getChannels( channel ).map( function( elem, index ) {
+	const channelMergedResults = channelsToMerge.map( ( channelName ) => {
+		const detectors = this.getChannelDetectors( channelName );
+		//Array of triplets, one per detector
+		const aggregatedDetectorResults = detectors.map( ( det ) => det.applyStrategy( localStrategy ) );
+		return applyStrategy( localStrategy, aggregatedDetectorResults );
+	} );
+	channelResults = this.getChannelDetectors( channelsToMerge ).map( function( elem, index ) {
 		elem.applyStrategy( localStrategy );
 	} );
 };

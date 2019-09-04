@@ -3,6 +3,8 @@
  * @module Detector
  */
 
+const applyStrategy = require( './tools/merge' ).applyStrategy;
+
 /**
  * Detector constructor function. It defines the common prototype
  * for future detectors
@@ -94,6 +96,18 @@ Detector.prototype.cleanResults = function() {
  */
 Detector.prototype.getResults = function( resultsType ) {
 	return this[ resultsType + 'Results' ];
+};
+
+/**
+ * Apply aggregation strategy to array of triplets.
+ * @function applyStrategy
+ * @memberof Detector
+ * @param {function} strategy - Callback which receives an array of PAD results and aggregate into
+ * one triplet.
+ * @return {Array} Aggregated results.
+ */
+Detector.prototype.applyStrategy = function( strategy ) {
+	return applyStrategy( strategy, this.getResults( 'pad' ) );
 };
 
 module.exports.Detector = Detector;

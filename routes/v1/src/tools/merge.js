@@ -1,3 +1,8 @@
+/**
+ * Merging module.
+ * @module Merge
+ */
+
 const mean = require( './operations' ).mean;
 const strategies = {
 	default: function( tripletsArray ) {
@@ -14,7 +19,7 @@ const strategies = {
 	}
 };
 
-module.exports.getMergingDataStrategy = function( strategyName ) {
+const getMergingDataStrategy = function( strategyName ) {
 	let strategy = strategies.default;
 	switch ( strategyName ) {
 		case 'case1':
@@ -26,3 +31,10 @@ module.exports.getMergingDataStrategy = function( strategyName ) {
 	}
 	return strategy;
 }
+
+module.exports.getMergingDataStrategy = getMergingDataStrategy;
+
+module.exports.applyStrategy = function( strategyName, tripletsArray ) {
+	const strategy = getMergingDataStrategy( strategyName );
+	return strategy( tripletsArray );
+};
