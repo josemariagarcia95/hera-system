@@ -158,7 +158,7 @@ router.post( '/results', function( req, res, next ) {
 	console.log( req.body );
 	const localStrategy = req.body.localStrategy;
 	const globalStrategy = req.body.globalStrategy;
-	const mergedResults = detectorHandler.mergeResults( localStrategy, globalStrategy );
+	const mergedResults = detectorHandler.mergeResults( [ 'face' ], localStrategy, globalStrategy );
 	res.status( 200 ).send( mergedResults );
 } );
 

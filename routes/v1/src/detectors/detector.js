@@ -3,7 +3,7 @@
  * @module Detector
  */
 
-const applyStrategy = require( './tools/merge' ).applyStrategy;
+const applyStrategy = require( '../tools/merge' ).applyStrategy;
 
 /**
  * Detector constructor function. It defines the common prototype

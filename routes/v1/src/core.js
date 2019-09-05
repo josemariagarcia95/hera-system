@@ -259,6 +259,8 @@ DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
  */
 DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
 	let channelsToMerge = undefined;
+	//TODO: comprobar si es un string y luego comprobar si es 'all' o el nombre
+	//de un canal
 	if ( channel === 'all' ) {
 		//Return all available channels
 		channelsToMerge = this.getChannelsKeys();

@@ -22,10 +22,10 @@
 			"program": "${workspaceFolder}\\routes\\v1\\src\\curry"
 		},
 		{
-			"type": "npm",
+			"type": "node",
 			"request": "launch",
 			"name": "Iniciar API",
-			"program": "start"
+			"program": "${workspaceFolder}\\bin\\www"
 		},
 
 		{

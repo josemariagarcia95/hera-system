@@ -6,13 +6,13 @@
 const mean = require( './operations' ).mean;
 const strategies = {
 	default: function( tripletsArray ) {
-		const pleasure = tripletsArray.forEach( ( element ) => {
+		const pleasure = tripletsArray.map( ( element ) => {
 			return element[ 0 ];
 		} );
-		const arousal = tripletsArray.forEach( ( element ) => {
+		const arousal = tripletsArray.map( ( element ) => {
 			return element[ 1 ];
 		} );
-		const dominance = tripletsArray.forEach( ( element ) => {
+		const dominance = tripletsArray.map( ( element ) => {
 			return element[ 2 ];
 		} );
 		return [ mean( pleasure ), mean( arousal ), mean( dominance ) ];
