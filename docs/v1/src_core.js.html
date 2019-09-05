@@ -26,13 +26,19 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>/* eslint-disable prefer-rest-params */
+/**
  * Core module.
  * @module Core
  */
 const base = require( './detectors/detector' );
 const present = require( 'present' );
+const mean = require( './tools/operations' ).mean;
 const fs = require( 'fs' );
+//The merge.js file contains all the merging strategies
+//We'll select this strategies using this function
+const applyStrategy = require( './tools/merge' ).applyStrategy;
+
 
 const realTimeThreshold = 4000;
 
@@ -99,12 +105,13 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			times.push( present() - startTime );
 			startTime = present();
 			if ( index + 1 === array.length ) {
-				const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
 				detectorObj.delay = mean( times );
 				detectorObj.realTime = detectorObj.delay &lt; realTimeThreshold;
-				console.log( detectorObj );
+				detectorObj.cleanResults();
 			}
 		};
+		console.log( __dirname + '\\detectors\\' + detectorObj.category +
+			'/benchmark-files/' + fileName );
 		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
 			'/benchmark-files/' + fileName, callback );
 	} );
@@ -121,15 +128,16 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
  */
 DetectorHandler.prototype.analyseMedia = function( mediaType, lookingFor, mediaPath ) {
 	return new Promise( ( resolve, reject ) => {
-		const analysisRequested = 0;
+		let analysisRequested = 0;
 		for ( const category in this.detectors ) {
 			if ( lookingFor.indexOf( category ) !== -1 ) {
 				this.detectors[ category ].forEach( ( detector, index, detectorCategory ) => {
 					if ( detector.media.indexOf( mediaType ) !== -1 ) {
-						detector.extractEmotions( mediaPath, detector );
+						detector.extractEmotions( detector, mediaPath );
 						analysisRequested++;
 					}
 				} );
+				console.log( analysisRequested );
 				resolve( analysisRequested );
 			}
 		}
@@ -186,17 +194,18 @@ DetectorHandler.prototype.filter = function( filteringFunction ) {
  * Get results from a specific channel in a specific format
  * @function getChannelResults
  * @memberof DetectorHandler
- * @param {strign} channel - Name of the channel from which the results are requested.
- * @param {strign} resulsType - Format desired for the results. E.g. pad or raw.
- * @return {Array|string} Array with the results or a string with an error message.
+ * @param {string} channel - Name of the channel from which the results are requested.
+ * @param {string} resulsType - Format desired for the results. E.g. pad or raw.
+ * @return {Array|Object} Array with the results or a object with a string holding the error message.
  */
 DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 	if ( this.detectors.hasOwnProperty( channel ) ) {
-		return Array.prototype.concat(
+		return [
 			this.detectors[ channel ].map( function( detector ) {
 				const results = detector.getResults( resulsType );
 				return results ? results : [];
-			} ) );
+			} )
+		];
 	} else {
 		return {
 			error: 'Non existing channel'
@@ -224,20 +233,79 @@ DetectorHandler.prototype.lengthDetectors = function() {
 	return this.getDetectors().length;
 };
 
-
-DetectorHandler.prototype.mergeResults = function( channel = 'all' ) {
-	//return process( this.getChannelResults( channel ) );
+/**
+ * Return array of channels
+ * @memberof DetectorHandler
+ * @return {Array} Array of channels
+ */
+DetectorHandler.prototype.getChannelsKeys = function() {
+	return Object.keys( this.detectors );
 };
 
 /**
- *
+ * Return array of channels
+ * @memberof DetectorHandler
+ * @param {Array} channelNames - Array of strings of channel names.
+ * @return {Array.&lt;Detector>} Array of channels (being a channel an array of Detector)
  */
-function MergeStrategy() {
-	this.name = 'strategy';
-}
+DetectorHandler.prototype.getChannels = function( channelNames ) {
+	if ( channelNames.length === 0 ) {
+		return [];
+	} else {
+		const channelArray = channelNames.map( ( channelName ) => {
+			if ( this.detectors.hasOwnProperty( channelName ) ) {
+				return this.getChannelResults( channelName, 'pad' );
+			} else {
+				return [];
+			}
+		} );
+		return channelArray;
+	}
+};
 
-MergeStrategy.prototype.process = function( results ) {
-	return {};
+/**
+ * Return detectors of a channel
+ * @memberof DetectorHandler
+ * @param {String} channelName - Name of a channel.
+ * @return {Array.&lt;Detector>} Array of channels (being a channel an array of Detector)
+ */
+DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
+	if ( this.detectors.hasOwnProperty( channelName ) ) {
+		return this.detectors[ channelName ];
+	} else {
+		return [];
+	}
+};
+
+/**
+ * Merge results from specified channels
+ * @memberof DetectorHandler
+ * @param {String|Array} channel - String 'all' or array of channel names
+ * @param {String} localStrategy - Name of local strategy. This strategy can be found in &lt;code>tools/merge.js&lt;/code>
+ * @param {String} globalStrategy - Name of global strategy. This strategy can be found in &lt;code>tools/merge.js&lt;/code>
+ * @return {Array} Triplet of aggregated data.
+ */
+DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
+	let channelsToMerge = undefined;
+	if ( channel === 'all' ) {
+		//Return all available channels
+		channelsToMerge = this.getChannelsKeys();
+	} else {
+		channelsToMerge = channel;
+	}
+	//Map the array of channel names: ['face', 'voice', 'other', ...]
+	//so every detector in every channel (contained in the array)
+	//aggregates its results in just one triplet
+	const channelMergedResults = channelsToMerge.map( ( channelName ) => {
+		//Get the detectors of each channel
+		const detectors = this.getChannelDetectors( channelName );
+		//Each detector applies the strategy to his own result
+		//We get an array of triplets per detector
+		const aggregatedDetectorResults = detectors.map( ( det ) => det.applyStrategy( localStrategy ) );
+		return applyStrategy( localStrategy, aggregatedDetectorResults );
+	} );
+	//we apply the global strategy to these locally aggregated data
+	return applyStrategy( globalStrategy, channelMergedResults );
 };
 
 module.exports.createDetector = createDetector;
@@ -252,13 +320,13 @@ module.exports.DetectorHandler = DetectorHandler;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-API.html">API</a></li><li><a href="module-Core.html">Core</a></li><li><a href="module-Detector.html">Detector</a></li></ul><h3>Classes</h3><ul><li><a href="Detector.html">Detector</a></li><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-API.html">API</a></li><li><a href="module-Core.html">Core</a></li><li><a href="module-Detector.html">Detector</a></li><li><a href="module-Merge.html">Merge</a></li><li><a href="module-Operations.html">Operations</a></li></ul><h3>Classes</h3><ul><li><a href="Detector.html">Detector</a></li><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 22 2019 10:53:23 GMT+0100 (GMT+01:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 05 2019 10:50:36 GMT+0200 (GMT+02:00)
 </footer>
 
 <script> prettyPrint(); </script>

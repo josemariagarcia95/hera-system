@@ -7,7 +7,7 @@ const applyStrategy = require( './tools/merge' ).applyStrategy;
 
 /**
  * Detector constructor function. It defines the common prototype
- * for future detectors
+ * for future detectors.
  * @constructs Detector
  * @param {string} id - Id of the detector. This id would be use in
  * HTTP request.
@@ -42,7 +42,7 @@ Detector.prototype.initialize = async function() {
 };
 
 /**
- * Send the media passed to the correspondent API
+ * Send the media passed to the correspondent API.
  * @function extractEmotions
  * @memberof Detector
  * @param {Object} context - Context in which auxiliar functions will be called. Context will be 'this' most of the times.
@@ -55,11 +55,11 @@ Detector.prototype.extractEmotions = function( context, media, callback = () => 
 };
 
 /**
- * Translated the raw results to the PAD format
+ * Translated the raw results to the PAD format.
  * @function translateToPAD
  * @memberof Detector
- * @param {Object} results - Results from the API that will be translated to the PAD space
- * @return {Object} Results expressed in the PAD space
+ * @param {Object} results - Results from the API that will be translated to the PAD space.
+ * @return {Object} Results expressed in the PAD space.
  */
 Detector.prototype.translateToPAD = function( results ) {
 	console.log( 'Translate method in Detector class' );
@@ -78,7 +78,7 @@ Detector.prototype.addResults = function( results ) {
 };
 
 /**
- * Delete all the previous results
+ * Delete all the previous results.
  * @function cleanResults
  * @memberof Detector
  */
@@ -88,10 +88,10 @@ Detector.prototype.cleanResults = function() {
 };
 
 /**
- * Translated the raw results to the PAD format
+ * Translated the raw results to the PAD format.
  * @function getResults
  * @memberof Detector
- * @param {string} resultsType - String with the type of results requested, i.e., 'pad' or 'raw'
+ * @param {string} resultsType - String with the type of results requested, i.e., 'pad' or 'raw'.
  * @return {Array} Results requested.
  */
 Detector.prototype.getResults = function( resultsType ) {
@@ -102,7 +102,7 @@ Detector.prototype.getResults = function( resultsType ) {
  * Apply aggregation strategy to array of triplets.
  * @function applyStrategy
  * @memberof Detector
- * @param {function} strategy - Callback which receives an array of PAD results and aggregate into
+ * @param {String} strategy - Name of the strategy which will be used to aggregate the PAD results.
  * one triplet.
  * @return {Array} Aggregated results.
  */

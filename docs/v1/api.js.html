@@ -50,7 +50,7 @@ router.get( '/', function( req, res, next ) {
  * @function /init
  */
 router.get( '/init', function( req, res, next ) {
-	console.log( '****************************SETUP****************************' );
+	console.log( '****************************INIT****************************' );
 	const promises = [];
 	const detectorsData = JSON.parse(
 		fs.readFileSync( './credentials.json' )
@@ -105,8 +105,10 @@ router.post( '/setup', function( req, res, next ) {
 	const preferences = req.body;
 	console.log( preferences );
 	let detectorsAffected = 0;
-	if ( preferences ) {
+	if ( Object.keys( preferences ).length !== 0 ) {
 		for ( const propFilter in preferences ) {
+			//We use the filter method from DetectorHandler to filter any detector on every channel
+			//that doesn't satisfy the requirements from the request's body
 			switch ( propFilter ) {
 				case 'type':
 					detectorsAffected += detectorHandler.filter(
@@ -129,7 +131,7 @@ router.post( '/setup', function( req, res, next ) {
 			detectorsUsed: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		res.status( 200 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
+		res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
 	}
 } );
 
@@ -148,46 +150,47 @@ router.post( '/analyse', function( req, res, next ) {
 	console.log( '****************************ANALYSE****************************' );
 	const mediaInfo = req.body;
 	if ( mediaInfo &amp;&amp; !mediaInfo.mediaPath ) {
-		res.status( 400 ).send( 'The request contais no path to media file. "path" attribute is missing' );
-	}
-	//We check if the file is in the system
-	const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
-	//If it's not in the system, it must be in some remote server
-	if ( !fileIsLocal ) {
-		const options = {
-			url: mediaInfo.mediaPath,
-			method: 'HEAD'
-		};
-		request( options, function( error, response, body ) {
-			//if the remote request fails as well, then the given path is incorrect
-			if ( error ) {
-				res.status( 400 ).send( 'The media specified is available neither locally or remotely' );
-			}
-		} );
-	}
-	detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
-		.then( function( success ) {
-			res.status( 200 ).send( 'Analyse started.' );
-		} ).catch( function( error ) {
-			console.log( error );
-			res.status( 503 ).send( 'Detectors were not available/found' );
-		} );
-} );
-
-router.get( '/results', function( req, res, next ) {
-	console.log( '****************************RESULTS****************************' );
-	const preferences = req.body;
-	const detectors = [];
-	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
-	if ( preferences ) {
-
+		res.status( 400 ).send( 'The request contais no path to media file. "mediaPath" attribute is missing' );
 	} else {
-
+		const analyseMedia = function( error, response, body ) {
+			if ( error ) {
+				res.status( 400 ).send( 'The media specified is not available either remotely or locally' );
+			} else {
+				detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
+					.then( function( success ) {
+						res.status( 200 ).send( 'Analyse started.' );
+					} ).catch( function( error ) {
+						console.log( error );
+						res.status( 503 ).send( 'Detectors were not available/found' );
+					} );
+			}
+		};
+		const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
+		//We perform a HEAD request to check the file existence if the file is not local
+		if ( !fileIsLocal ) {
+			const options = {
+				url: mediaInfo.mediaPath,
+				method: 'HEAD'
+			};
+			request( options, analyseMedia );
+		} else {
+			analyseMedia();
+		}
 	}
-	res.status( 200 ).send( 'Todo ok' );
+	//res.status( 400 ).send( 'Something went horribly wrong' );
+	//We check if the file is in the system
 } );
 
-router.get( '/results/:channel', function( req, res, next ) {
+router.post( '/results', function( req, res, next ) {
+	console.log( '****************************RESULTS****************************' );
+	console.log( req.body );
+	const localStrategy = req.body.localStrategy;
+	const globalStrategy = req.body.globalStrategy;
+	const mergedResults = detectorHandler.mergeResults( localStrategy, globalStrategy );
+	res.status( 200 ).send( mergedResults );
+} );
+
+router.get( '/results/:channel/:type', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL****************************' );
 	const preferences = req.body;
 	const detectors = [];
@@ -200,6 +203,13 @@ router.get( '/results/:channel', function( req, res, next ) {
 	res.status( 200 ).send( 'Todo ok' );
 } );
 
+router.get( '/results/:channel/:detector', function( req, res, next ) {
+	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
+	if ( req.params.channel === void( 0 ) ) {
+		const detector = detectorHandler.getDetectorFromChannel();
+	}
+	res.status( 200 ).send( 'Todo ok' );
+} );
 
 /*
 router.get( '/results-raw', function( req, res, next ) {
@@ -237,13 +247,13 @@ module.exports = router;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-API.html">API</a></li><li><a href="module-Core.html">Core</a></li><li><a href="module-Detector.html">Detector</a></li></ul><h3>Classes</h3><ul><li><a href="Detector.html">Detector</a></li><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-API.html">API</a></li><li><a href="module-Core.html">Core</a></li><li><a href="module-Detector.html">Detector</a></li><li><a href="module-Merge.html">Merge</a></li><li><a href="module-Operations.html">Operations</a></li></ul><h3>Classes</h3><ul><li><a href="Detector.html">Detector</a></li><li><a href="DetectorHandler.html">DetectorHandler</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 22 2019 10:53:23 GMT+0100 (GMT+01:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 05 2019 10:50:36 GMT+0200 (GMT+02:00)
 </footer>
 
 <script> prettyPrint(); </script>
