@@ -207,6 +207,7 @@ DetectorHandler.prototype.lengthDetectors = function() {
 
 /**
  * Return array of channels
+ * @memberof DetectorHandler
  * @return {Array} Array of channels
  */
 DetectorHandler.prototype.getChannelsKeys = function() {
@@ -215,6 +216,7 @@ DetectorHandler.prototype.getChannelsKeys = function() {
 
 /**
  * Return array of channels
+ * @memberof DetectorHandler
  * @param {Array} channelNames - Array of strings of channel names.
  * @return {Array.<Detector>} Array of channels (being a channel an array of Detector)
  */
@@ -235,6 +237,7 @@ DetectorHandler.prototype.getChannels = function( channelNames ) {
 
 /**
  * Return detectors of a channel
+ * @memberof DetectorHandler
  * @param {String} channelName - Name of a channel.
  * @return {Array.<Detector>} Array of channels (being a channel an array of Detector)
  */
@@ -246,6 +249,14 @@ DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
 	}
 };
 
+/**
+ * Merge results from specified channels
+ * @memberof DetectorHandler
+ * @param {String|Array} channel - String 'all' or array of channel names
+ * @param {String} localStrategy - Name of local strategy. This strategy can be found in <code>tools/merge.js</code>
+ * @param {String} globalStrategy - Name of global strategy. This strategy can be found in <code>tools/merge.js</code>
+ * @return {Array} Triplet of aggregated data.
+ */
 DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globalStrategy ) {
 	let channelsToMerge = undefined;
 	if ( channel === 'all' ) {
@@ -267,17 +278,6 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 	} );
 	//we apply the global strategy to these locally aggregated data
 	return applyStrategy( globalStrategy, channelMergedResults );
-};
-
-/**
- *
- */
-function MergeStrategy() {
-	this.name = 'strategy';
-}
-
-MergeStrategy.prototype.process = function( results ) {
-	return {};
 };
 
 module.exports.createDetector = createDetector;
