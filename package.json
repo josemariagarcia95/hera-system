@@ -5,6 +5,7 @@
 	"scripts": {
 		"start": "node ./bin/www",
 		"test": "node test/automatic-use-case.js",
+		"integration-tests": "start-server-and-test start http://localhost:3000 test",
 		"generate-docs": "jsdoc -r ./routes/v1/ -d ./docs/v1"
 	},
 	"dependencies": {
@@ -19,10 +20,12 @@
 		"morgan": "~1.9.0",
 		"present": "^1.0.0",
 		"request": "^2.88.0",
+		"wait-on": "^3.3.0",
 		"web-audio-api": "^0.2.2"
 	},
 	"devDependencies": {
 		"eslint": "^5.16.0",
-		"eslint-config-google": "^0.11.0"
+		"eslint-config-google": "^0.11.0",
+		"start-server-and-test": "^1.10.2"
 	}
 }

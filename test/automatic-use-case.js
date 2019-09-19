@@ -14,15 +14,76 @@ const options = {
 };
 */
 
-const server = require( '../bin/www' );
-
 const get = util.promisify( request.get );
 const post = util.promisify( request.post );
 console.log( 'Test file' );
-setTimeout( test, 1000 );
+init();
 
-function test() {
+
+function init() {
+	console.log( 'Init Endpoint' );
 	get( 'http://localhost:3000/api/v1/init' )
-		.then( ( res ) => console.log( res.body ) )
-		.catch( ( res ) => console.log( res.body ) );
+		.then( ( res ) => {
+			console.log( 'Success' );
+			console.log( res.body );
+		} )
+		.catch( ( reason ) => {
+			console.log( 'Error' );
+			console.log( reason );
+		} ).finally( () => setTimeout( setup, 4000 ) );
+}
+
+function setup() {
+	console.log( 'Setup Endpoint' );
+	post( {
+		url: 'http://localhost:3000/api/v1/setup',
+		body: {
+			type: [ 'face' ],
+			delay: 3000
+		},
+		json: true
+	} ).then( ( res ) => {
+		console.log( 'Success' );
+		console.log( res.body );
+	} ).catch( ( reason ) => {
+		console.log( 'Error' );
+		console.log( reason );
+	} ).finally( () => setTimeout( analyse, 4000 ) );
+}
+
+function analyse() {
+	console.log( 'Analyse Endpoint' );
+	post( {
+		url: 'http://localhost:3000/api/v1/analyse',
+		body: {
+			mediaType: 'image',
+			lookingFor: 'face',
+			mediaPath: 'http://josemariagarcia.es/img/perfil.jpg'
+		},
+		json: true
+	} ).then( ( res ) => {
+		console.log( 'Success' );
+		console.log( res.body );
+	} ).catch( ( reason ) => {
+		console.log( 'Error' );
+		console.log( reason );
+	} ).finally( () => setTimeout( results, 6000 ) );
+}
+
+function results() {
+	console.log( 'Results Endpoint' );
+	post( {
+		url: 'http://localhost:3000/api/v1/results',
+		body: {
+			localStrategy: 'default',
+			globalStrategy: 'default'
+		},
+		json: true
+	} ).then( ( res ) => {
+		console.log( 'Success' );
+		console.log( res.body );
+	} ).catch( ( reason ) => {
+		console.log( 'Error' );
+		console.log( reason );
+	} ).finally( () => setTimeout( () => {}, 4000 ) );
 }
