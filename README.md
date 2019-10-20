@@ -1,5 +1,5 @@
 # ![logo](/logo/tot-64.png) Tot system
-Two-level multimodal system to detect emotions.
+Two-level multimodal system to detect emotions..
 
 ## Lanching the API
 Lanching the API is quite simple. Once you've downloaded the repository, just run a
