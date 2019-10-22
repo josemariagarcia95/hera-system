@@ -1,3 +1,4 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * Detector module. It holds the Detector class.
  * @module Detector
@@ -112,8 +113,74 @@ Detector.prototype.applyStrategy = function( strategy ) {
 
 if ( typeof window !== 'undefined' ) {
 	window.Detector = function() {
-		return Detector;
+		return Detector();
 	};
 }
 
 module.exports.Detector = Detector;
+
+},{"../tools/merge":2}],2:[function(require,module,exports){
+/**
+ * Merging module.
+ * @module Merge
+ */
+
+const mean = require( './operations' ).mean;
+const strategies = {
+	default: function( tripletsArray ) {
+		const pleasure = tripletsArray.map( ( element ) => {
+			return element[ 0 ];
+		} );
+		const arousal = tripletsArray.map( ( element ) => {
+			return element[ 1 ];
+		} );
+		const dominance = tripletsArray.map( ( element ) => {
+			return element[ 2 ];
+		} );
+		return [ mean( pleasure ), mean( arousal ), mean( dominance ) ];
+	}
+};
+
+const getMergingDataStrategy = function( strategyName ) {
+	let strategy = strategies.default;
+	switch ( strategyName ) {
+		case 'case1':
+			strategy = strategies.case1;
+			break;
+		default:
+			strategy = strategies.default;
+			break;
+	}
+	return strategy;
+}
+
+module.exports.getMergingDataStrategy = getMergingDataStrategy;
+
+module.exports.applyStrategy = function( strategyName, tripletsArray ) {
+	const strategy = getMergingDataStrategy( strategyName );
+	return strategy( tripletsArray );
+};
+
+},{"./operations":3}],3:[function(require,module,exports){
+/**
+ * Operations module.
+ * @module Operations
+ */
+
+const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
+
+/**
+ *  Normalize emotion results to PAD values (from 0 to 1)
+ * @param {Array} triplet
+ * @param {int} max
+ * @param {int} min
+ * @return {int} Normalized array
+ */
+function normalize( triplet, max, min ) {
+	return triplet.map( ( value ) => ( value - min ) / ( max - min ) );
+}
+
+module.exports.mean = mean;
+module.exports.normalize = normalize;
+
+},{}]},{},[1]);
