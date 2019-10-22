@@ -4,6 +4,8 @@
  */
 const fs = require( 'fs' );
 const core = require( './src/core' );
+const users = require( './src/users.js' );
+const uniqid = require( 'uniqid' );
 const request = require( 'request' );
 const express = require( 'express' );
 const router = express.Router();
@@ -12,6 +14,12 @@ const detectorHandler = new core.DetectorHandler();
 
 
 router.get( '/', function( req, res, next ) {
+	if ( req.cookie && users.userExists( req.cookie.userId ) ) {
+		console.log( 'Existing user. Session refreshed' );
+	} else {
+		const userId = users.addUser( uniqid() );
+		res.cookie( 'userId', userId );
+	}
 	res.send( 'respond with a resource' );
 } );
 

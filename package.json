@@ -20,6 +20,7 @@
 		"morgan": "~1.9.0",
 		"present": "^1.0.0",
 		"request": "^2.88.0",
+		"uniqid": "^5.0.3",
 		"wait-on": "^3.3.0",
 		"web-audio-api": "^0.2.2"
 	},

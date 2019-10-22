@@ -83,9 +83,9 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			}
 		};
 		console.log( __dirname + '\\detectors\\' + detectorObj.category +
-			'/benchmark-files/' + fileName );
+			'\\benchmark-files\\' + fileName );
 		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
-			'/benchmark-files/' + fileName, callback );
+			'\\benchmark-files\\' + fileName, callback );
 	} );
 };
 
