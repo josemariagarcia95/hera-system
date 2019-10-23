@@ -30,7 +30,7 @@ Additionally, you could send a `/setup` request to filter the slowest detectors,
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
 
 * `/init`
-	* `GET`. Reads configuration from `credentials.json`, initialize each emotion detector and performs a benchmarking task to test the state of the network and the detectors. See [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)
+	* `POST`. Inits detectors for a user, using setting information either sent in the request or stored in some setting file. Initializes each emotion detector and performs a benchmarking task to test the state of the network and the detectors. See [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)
 * `/setup`
 	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). `/setup` receives, in the request body, up to 3 parameters.
 		* `type`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category.

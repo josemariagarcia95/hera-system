@@ -31,40 +31,48 @@ router.get( '/', function( req, res, next ) {
  */
 router.get( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
-	const promises = [];
-	const detectorsData = JSON.parse(
-		fs.readFileSync( './credentials.json' )
-	);
-	for ( const detectorId in detectorsData ) {
-		const callbacks = require( detectorsData[ detectorId ].callbacks );
-		const newDetector = core.createDetector(
-			detectorId,
-			detectorsData[ detectorId ].category,
-			detectorsData[ detectorId ].media,
-			detectorsData[ detectorId ].realTime,
-			detectorsData[ detectorId ].url,
-			detectorsData[ detectorId ].otherOptions,
-			callbacks.initialize,
-			callbacks.extractEmotions,
-			callbacks.translateToPAD
-		);
-		promises.push( newDetector.initialize() );
-		detectorHandler.addDetector( newDetector );
+	if ( req.cookie && users.userExists( req.cookie.userId ) ) {
+		const promises = [];
+		let detectorsData = {};
+		if ( req.body.settings ) {
+			detectorsData = req.body.settings;
+		} else if ( req.body.settingsFile ) {
+			detectorsData = JSON.parse(
+				fs.readFileSync( './' + req.body.settingsFile )
+			);
+		}
+		const detectorHandler = new core.DetectorHandler();
+		for ( const detectorId in detectorsData ) {
+			const callbacks = require( detectorsData[ detectorId ].callbacks );
+			const newDetector = core.createDetector(
+				detectorId,
+				detectorsData[ detectorId ].category,
+				detectorsData[ detectorId ].media,
+				detectorsData[ detectorId ].realTime,
+				detectorsData[ detectorId ].url,
+				detectorsData[ detectorId ].otherOptions,
+				callbacks.initialize,
+				callbacks.extractEmotions,
+				callbacks.translateToPAD
+			);
+			promises.push( newDetector.initialize() );
+			detectorHandler.addDetector( newDetector );
+		}
+		Promise.all( promises ).then( function( results ) {
+			results.forEach( function( value, ...args ) {
+				console.log( value );
+			} );
+			res.status( 200 ).send( {
+				status: 'Detectors initialized',
+				detectorNumber: results.length
+			} );
+		}, function( results ) {
+			console.error( 'Something went horrible wrong' );
+			res.status( 418 ).send( {
+				status: 'Error on initialization'
+			} );
+		} );
 	}
-	Promise.all( promises ).then( function( results ) {
-		results.forEach( function( value, ...args ) {
-			console.log( value );
-		} );
-		res.status( 200 ).send( {
-			status: 'Detectors initialized',
-			detectorNumber: results.length
-		} );
-	}, function( results ) {
-		console.error( 'Something went horrible wrong' );
-		res.status( 418 ).send( {
-			status: 'Error on initialization'
-		} );
-	} );
 } );
 
 /**
