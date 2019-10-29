@@ -18,7 +18,7 @@ const userHandler = {
 	addUser: function( uniqueID ) {
 		const newUser = {
 			id: uniqueID,
-			detectorHandler: new core.DetectorHandler(),
+			detectorHandler: {},
 			expires: new Date( Date.now() + 5000 ),
 			active: 300000
 		};
@@ -74,6 +74,12 @@ const userHandler = {
 		this.users = this.users.filter( ( user ) => Date.now() <= user.expires );
 		if ( len !== this.users.length ) {
 			console.log( len - this.users.length + ' users deleted' );
+		}
+	},
+	setDetectorHandler: function( userID, detectorHandler ) {
+		const user = this.getUser( userID );
+		if ( typeof user !== 'undefined' ) {
+			user.detectorHandler = detectorHandler;
 		}
 	}
 };

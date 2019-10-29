@@ -12,15 +12,30 @@ const router = express.Router();
 
 const detectorHandler = new core.DetectorHandler();
 
-
 router.get( '/', function( req, res, next ) {
-	if ( req.cookie && users.userExists( req.cookie.userId ) ) {
+	if ( req.cookies && users.userExists( req.cookies.userId ) ) {
 		console.log( 'Existing user. Session refreshed' );
 	} else {
 		const userId = users.addUser( uniqid() );
+		console.log( 'User added' );
 		res.cookie( 'userId', userId );
 	}
 	res.send( 'respond with a resource' );
+} );
+
+
+router.use( function( req, res, next ) {
+	if ( !req.cookies || !req.cookies.userId ) {
+		res.status( 401 ).send( {
+			status: 'Session wasn\'t initialized. Send request to "/" first.'
+		} );
+	} else if ( !users.userExists( req.cookies.userId ) ) {
+		res.status( 401 ).send( {
+			status: 'User doesn\'t exist. Expired session. Please, send request to "/" first.'
+		} );
+	} else {
+		next();
+	}
 } );
 
 /**
@@ -29,18 +44,20 @@ router.get( '/', function( req, res, next ) {
  * The request receives no parameters, reads the <tt>crediantials.json</tt> file and instantiates all the detectors set in it.
  * @function /init
  */
-router.get( '/init', function( req, res, next ) {
+router.post( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
-	if ( req.cookie && users.userExists( req.cookie.userId ) ) {
-		const promises = [];
-		let detectorsData = {};
-		if ( req.body.settings ) {
-			detectorsData = req.body.settings;
-		} else if ( req.body.settingsFile ) {
-			detectorsData = JSON.parse(
-				fs.readFileSync( './' + req.body.settingsFile )
-			);
-		}
+	console.log( 'COOKIE EXISTE, PROCEDEMOS A CREAR DETECTORES' );
+	const promises = [];
+	let detectorsData = {};
+	if ( req.body.settings ) {
+		detectorsData = req.body.settings;
+	} else if ( req.body.settingsFile ) {
+		detectorsData = JSON.parse(
+			fs.readFileSync( './' + req.body.settingsFile )
+		);
+	}
+	//If there is data in detectorsData, we create the detectors
+	if ( Object.keys( detectorsData ).length ) {
 		const detectorHandler = new core.DetectorHandler();
 		for ( const detectorId in detectorsData ) {
 			const callbacks = require( detectorsData[ detectorId ].callbacks );
@@ -59,6 +76,7 @@ router.get( '/init', function( req, res, next ) {
 			detectorHandler.addDetector( newDetector );
 		}
 		Promise.all( promises ).then( function( results ) {
+			users.setDetectorHandler( req.cookies.userId, detectorHandler );
 			results.forEach( function( value, ...args ) {
 				console.log( value );
 			} );
@@ -71,6 +89,11 @@ router.get( '/init', function( req, res, next ) {
 			res.status( 418 ).send( {
 				status: 'Error on initialization'
 			} );
+		} );
+	} else {
+		//if detectorData is empty
+		res.status( 400 ).send( {
+			status: 'No detector data read'
 		} );
 	}
 } );
@@ -90,36 +113,46 @@ router.get( '/init', function( req, res, next ) {
  */
 router.post( '/setup', function( req, res, next ) {
 	console.log( '****************************SETUP****************************' );
-	const preferences = req.body;
-	console.log( preferences );
-	let detectorsAffected = 0;
-	if ( Object.keys( preferences ).length !== 0 ) {
-		for ( const propFilter in preferences ) {
-			//We use the filter method from DetectorHandler to filter any detector on every channel
-			//that doesn't satisfy the requirements from the request's body
-			switch ( propFilter ) {
-				case 'type':
-					detectorsAffected += detectorHandler.filter(
-						( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
-					);
-					break;
-				case 'realTime':
-					detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
-					break;
-				case 'delay':
-					detectorsAffected += detectorHandler.filter( ( det ) => det.delay <= preferences[ propFilter ] );
-					break;
-				default:
-					break;
-			}
-		}
-		res.status( 200 ).send( {
-			status: 'OK',
-			detectorsAffected: detectorsAffected,
-			detectorsUsed: detectorHandler.lengthDetectors()
+	if ( !req.cookie || !req.cookie.userId ) {
+		res.status( 401 ).send( {
+			status: 'Session wasn\'t initialized. Send request to "/" first.'
+		} );
+	} else if ( !users.userExists( req.cookie.userId ) ) {
+		res.status( 401 ).send( {
+			status: 'User doesn\'t exist. Expired session. Please, send request to "/" first.'
 		} );
 	} else {
-		res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
+		const preferences = req.body;
+		console.log( preferences );
+		let detectorsAffected = 0;
+		if ( Object.keys( preferences ).length !== 0 ) {
+			for ( const propFilter in preferences ) {
+				//We use the filter method from DetectorHandler to filter any detector on every channel
+				//that doesn't satisfy the requirements from the request's body
+				switch ( propFilter ) {
+					case 'type':
+						detectorsAffected += detectorHandler.filter(
+							( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
+						);
+						break;
+					case 'realTime':
+						detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
+						break;
+					case 'delay':
+						detectorsAffected += detectorHandler.filter( ( det ) => det.delay <= preferences[ propFilter ] );
+						break;
+					default:
+						break;
+				}
+			}
+			res.status( 200 ).send( {
+				status: 'OK',
+				detectorsAffected: detectorsAffected,
+				detectorsUsed: detectorHandler.lengthDetectors()
+			} );
+		} else {
+			res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
+		}
 	}
 } );
 
