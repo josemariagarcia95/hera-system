@@ -12,6 +12,19 @@ const router = express.Router();
 
 const detectorHandler = new core.DetectorHandler();
 
+/**
+ * <strong>ENDPOINT.</strong><br/>
+ * The root (<tt>/</tt>) endpoint allows us to create a <strong>user session</strong>.<br/>
+ * Tot groups each set of detectors (and hence results) under an user object (see [Users]{@link module:Users}), univocally identified with an id (generated with <a target="_blank" href="https://www.npmjs.com/package/uniqid">uniqid</a>) stored as a <strong>cookie</strong>,
+ * so the users have to send their id along with their request in order to perform any operation. <strong>The users cannot communicate with any other endpoint if they haven't been given an id</strong>.
+ * When a new request for this endpoint arrives, the request's cookies are checked:
+ * <ul>
+ * 	<li>If there is no id, then a new user is created, and its unique id is stored in the response's cookies.</li>
+ * 	<li>If there is an user id in the cookies, then that user's session is refreshed. If said id is from an expired user, then a new user
+ * (and id) is created.
+ *
+ * @function /
+ */
 router.get( '/', function( req, res, next ) {
 	if ( req.cookies && users.userExists( req.cookies.userId ) ) {
 		console.log( 'Existing user. Session refreshed' );
@@ -23,7 +36,14 @@ router.get( '/', function( req, res, next ) {
 	res.send( 'respond with a resource' );
 } );
 
-
+/**
+ * This middleware is set at the beginning of the API, after the <code>/</code> endpoint, to check if the user has a valid id.<br/>
+ * If there is no id information, or the id is from an expired user, an error is returned.
+ * If the id stored in the cookies is valid, then the request can continue, (<code>next()</code>).
+ * 
+ *
+ * @name ID Checking Middleware
+ */
 router.use( function( req, res, next ) {
 	if ( !req.cookies || !req.cookies.userId ) {
 		res.status( 401 ).send( {
