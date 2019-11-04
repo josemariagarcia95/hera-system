@@ -66,6 +66,27 @@ const userHandler = {
 		}
 	},
 	/**
+	 * Sets up an user's detectors according to a set of parameters especified in
+	 * <code>preferences</code> (see [/setup]{@link module:API~/setup}). This function just called the
+	 * <code><strong>setupDetectors</strong></code> function in
+	 * <code><strong>[DetectorHandler]{@link module:Core~DetectorHandler} </strong></code>and returned the number
+	 * of detectors affected by the filtering.
+	 * @function setupDetectors
+	 * @param {Object} preferences - Detectors setup information
+	 * @return {number} Number of filtered (removed) detectors.
+	 */
+	setupDetectors: function( preferences ) {
+		return this.detectorHandler.setupDetectors( preferences );
+	},
+	/**
+	 * 
+	 * @function getDetectorLength
+	 * @return {number} Total number of detectors.
+	 */
+	getDetectorLength: function() {
+		return this.detectorHandler.lengthDetectors();
+	},
+	/**
 	 * Expiration function called at a specified interval which filters out expired users.
 	 * @function expirationTime
 	 */

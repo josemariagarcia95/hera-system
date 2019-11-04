@@ -90,6 +90,38 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 };
 
 /**
+ * @function setupDetectors
+ * @memberof DetectorHandler
+ * @param {Object} preferences - JSON object with the setting information (see [/setup]{@link module:API~/setup})
+ * @return {number} Number of filtered (removed) detectors.
+ */
+DetectorHandler.prototype.setupDetectors = function( preferences ) {
+	let detectorsAffected = 0;
+	if ( Object.keys( preferences ).length !== 0 ) {
+		for ( const propFilter in preferences ) {
+			//We use the filter method from DetectorHandler to filter any detector on every channel
+			//that doesn't satisfy the requirements from the request's body
+			switch ( propFilter ) {
+				case 'type':
+					detectorsAffected += this.filter(
+						( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
+					);
+					break;
+				case 'realTime':
+					detectorsAffected += this.filter( ( det ) => det.realTime === preferences[ propFilter ] );
+					break;
+				case 'delay':
+					detectorsAffected += this.filter( ( det ) => det.delay <= preferences[ propFilter ] );
+					break;
+				default:
+					break;
+			}
+		}
+	}
+	return detectorsAffected;
+};
+
+/**
  * Analyse the media passed as an argument looking for affective data.
  * @function analyseMedia
  * @memberof DetectorHandler

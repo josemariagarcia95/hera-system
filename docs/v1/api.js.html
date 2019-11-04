@@ -43,13 +43,18 @@ const detectorHandler = new core.DetectorHandler();
 /**
  * &lt;strong>ENDPOINT.&lt;/strong>&lt;br/>
  * The root (&lt;tt>/&lt;/tt>) endpoint allows us to create a &lt;strong>user session&lt;/strong>.&lt;br/>
- * Tot groups each set of detectors (and hence results) under an user object (see [Users]{@link module:Users}), univocally identified with an id (generated with &lt;a target="_blank" href="https://www.npmjs.com/package/uniqid">uniqid&lt;/a>) stored as a &lt;strong>cookie&lt;/strong>,
- * so the users have to send their id along with their request in order to perform any operation. &lt;strong>The users cannot communicate with any other endpoint if they haven't been given an id&lt;/strong>.
+ * Tot groups each set of detectors (and hence results) under an user object
+ * (see [Users]{@link module:Users}), univocally identified with an id (generated with
+ * &lt;a target="_blank" href="https://www.npmjs.com/package/uniqid">uniqid&lt;/a>) stored as a
+ * &lt;strong>cookie&lt;/strong>, so the users have to send their id along with their request in
+ *  order to perform any operation. &lt;strong>The users cannot communicate with any other
+ * endpoint if they haven't been given an id&lt;/strong>.
  * When a new request for this endpoint arrives, the request's cookies are checked:
  * &lt;ul>
- * 	&lt;li>If there is no id, then a new user is created, and its unique id is stored in the response's cookies.&lt;/li>
- * 	&lt;li>If there is an user id in the cookies, then that user's session is refreshed. If said id is from an expired user, then a new user
- * (and id) is created.
+ * 	&lt;li>If there is no id, then a new user is created, and its unique id is stored in
+ * the response's cookies.&lt;/li>
+ * 	&lt;li>If there is an user id in the cookies, then that user's session is refreshed.
+ * If said id is from an expired user, then a new user (and id) is created.
  *
  * @function /
  */
@@ -65,11 +70,10 @@ router.get( '/', function( req, res, next ) {
 } );
 
 /**
- * This middleware is set at the beginning of the API, after the &lt;code>/&lt;/code> endpoint, to check if the user has a valid id.&lt;br/>
+ * This middleware is set at the beginning of the API, after the &lt;code>/&lt;/code> endpoint,
+ * to check if the user has a valid id.&lt;br/>
  * If there is no id information, or the id is from an expired user, an error is returned.
  * If the id stored in the cookies is valid, then the request can continue, (&lt;code>next()&lt;/code>).
- * 
- *
  * @name ID Checking Middleware
  */
 router.use( function( req, res, next ) {
@@ -88,13 +92,14 @@ router.use( function( req, res, next ) {
 
 /**
  * &lt;strong>ENDPOINT.&lt;/strong>&lt;br/>
- * The &lt;tt>/init&lt;/tt> endpoint allows us initialize the whole system.&lt;br/>
- * The request receives no parameters, reads the &lt;tt>crediantials.json&lt;/tt> file and instantiates all the detectors set in it.
+ * The &lt;tt>/init&lt;/tt> endpoint allows us to initialize the whole system.&lt;br/>
+ * The setting information can be received through the request itself (&lt;code>settings&lt;/code> parameter),
+ *  or through a file, in which case the path to said file must be indicated in the request
+ * (&lt;code>settingsPath&lt;/code>).
  * @function /init
  */
 router.post( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
-	console.log( 'COOKIE EXISTE, PROCEDEMOS A CREAR DETECTORES' );
 	const promises = [];
 	let detectorsData = {};
 	if ( req.body.settings ) {
@@ -161,46 +166,17 @@ router.post( '/init', function( req, res, next ) {
  */
 router.post( '/setup', function( req, res, next ) {
 	console.log( '****************************SETUP****************************' );
-	if ( !req.cookie || !req.cookie.userId ) {
-		res.status( 401 ).send( {
-			status: 'Session wasn\'t initialized. Send request to "/" first.'
-		} );
-	} else if ( !users.userExists( req.cookie.userId ) ) {
-		res.status( 401 ).send( {
-			status: 'User doesn\'t exist. Expired session. Please, send request to "/" first.'
+	const preferences = req.body;
+	console.log( preferences );
+	if ( Object.keys( preferences ).length !== 0 ) {
+		const detectorsAffected = users.getUser( req.cookies.userId ).setupDetector( preferences );
+		res.status( 200 ).send( {
+			status: 'OK',
+			detectorsAffected: detectorsAffected,
+			detectorsUsed: detectorHandler.lengthDetectors()
 		} );
 	} else {
-		const preferences = req.body;
-		console.log( preferences );
-		let detectorsAffected = 0;
-		if ( Object.keys( preferences ).length !== 0 ) {
-			for ( const propFilter in preferences ) {
-				//We use the filter method from DetectorHandler to filter any detector on every channel
-				//that doesn't satisfy the requirements from the request's body
-				switch ( propFilter ) {
-					case 'type':
-						detectorsAffected += detectorHandler.filter(
-							( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
-						);
-						break;
-					case 'realTime':
-						detectorsAffected += detectorHandler.filter( ( det ) => det.realTime === preferences[ propFilter ] );
-						break;
-					case 'delay':
-						detectorsAffected += detectorHandler.filter( ( det ) => det.delay &lt;= preferences[ propFilter ] );
-						break;
-					default:
-						break;
-				}
-			}
-			res.status( 200 ).send( {
-				status: 'OK',
-				detectorsAffected: detectorsAffected,
-				detectorsUsed: detectorHandler.lengthDetectors()
-			} );
-		} else {
-			res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
-		}
+		res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
 	}
 } );
 
@@ -322,7 +298,7 @@ module.exports = router;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Oct 30 2019 13:49:50 GMT+0100 (GMT+01:00)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Nov 04 2019 13:35:41 GMT+0100 (GMT+01:00)
 </footer>
 
 <script> prettyPrint(); </script>
