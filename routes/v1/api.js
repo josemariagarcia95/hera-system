@@ -183,17 +183,27 @@ router.post( '/analyse', function( req, res, next ) {
 			if ( error ) {
 				res.status( 400 ).send( 'The media specified is not available either remotely or locally' );
 			} else {
-				detectorHandler.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
-					.then( function( success ) {
-						res.status( 200 ).send( 'Analyse started.' );
-					} ).catch( function( error ) {
-						console.log( error );
-						res.status( 503 ).send( 'Detectors were not available/found' );
+				try {
+					users.getUser( req.cookies.userId ).detectorHandler
+						.analyseMedia( mediaInfo.mediaType, mediaInfo.lookingFor, mediaInfo.mediaPath )
+						.then( function( success ) {
+							res.status( 200 ).send( 'Analyse started.' );
+						} ).catch( function( error ) {
+							console.log( error );
+							res.status( 503 ).send( 'Detectors were not available/found' );
+						} );
+				} catch ( error ) {
+					console.error( error );
+					res.status( 400 ).send( {
+						status: 'error',
+						error: error
 					} );
+				}
 			}
 		};
 		const fileIsLocal = fs.existsSync( mediaInfo.mediaPath );
 		//We perform a HEAD request to check the file existence if the file is not local
+		//If the HEAD request fails, the error is handled in the callback
 		if ( !fileIsLocal ) {
 			const options = {
 				url: mediaInfo.mediaPath,
@@ -208,12 +218,37 @@ router.post( '/analyse', function( req, res, next ) {
 	//We check if the file is in the system
 } );
 
+/**
+ * <strong>ENDPOINT.</strong><br/>
+ * The <code>/results</code> endpoint returns a single triplet as a result of aggregating
+ * all the previous results from emotion detectors in the PAD format. The aggregation process has three
+ * levels:
+ * <ol>
+ * 	<li>Each <code>detector</code> aggregates its results applying the <code>localStrategy</code> strategy,
+ * 	turning a PAD results array into a single PAD triplet. At this point, we have a PAD triplet per detector.</li>
+ * 	<li>These triplets are aggregated again, using the <code>localStrategy</code> strategy, but grouping them
+ * 	by <strong>channel</strong>. At this point, we have a PAD triplet per emotion channel.</li>
+ * 	<li>Finally, these channels' triplets are aggregated using the <code>globalStrategy</code> strategy,
+ * 	producing the final PAD triplet which is returned to the user.</li>
+ * </ol>
+ * @function /results
+ * @param {Array} [channelsToMerge] - Array of emotion channels to merge.
+ */
 router.post( '/results', function( req, res, next ) {
 	console.log( '****************************RESULTS****************************' );
-	console.log( req.body );
-	const localStrategy = req.body.localStrategy;
-	const globalStrategy = req.body.globalStrategy;
-	const mergedResults = detectorHandler.mergeResults( [ 'face' ], localStrategy, globalStrategy );
+	try {
+		const mergedResults = users.getUser( req.cookies.userId ).detectorHandler.mergeResults(
+			req.body.channelsToMerge,
+			req.body.localStrategy,
+			req.body.globalStrategy
+		);
+	} catch ( error ) {
+		console.error( error );
+		res.status( 400 ).send( {
+			status: 'error',
+			error: error
+		} );
+	}
 	res.status( 200 ).send( mergedResults );
 } );
 

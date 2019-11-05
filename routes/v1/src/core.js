@@ -296,8 +296,9 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 	if ( channel === 'all' ) {
 		//Return all available channels
 		channelsToMerge = this.getChannelsKeys();
-	} else {
-		channelsToMerge = channel;
+	} else if ( typeof channel !== 'Array' ) {
+		//channel can be either undefined or a string
+		channelsToMerge = [ channel ];
 	}
 	//Map the array of channel names: ['face', 'voice', 'other', ...]
 	//so every detector in every channel (contained in the array)
@@ -307,6 +308,8 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 		const detectors = this.getChannelDetectors( channelName );
 		//Each detector applies the strategy to his own result
 		//We get an array of triplets per detector
+		//The strategies can be undefined at this point, and this will be handled in the
+		//./tool/operation.js file.
 		const aggregatedDetectorResults = detectors.map( ( det ) => det.applyStrategy( localStrategy ) );
 		return applyStrategy( localStrategy, aggregatedDetectorResults );
 	} );
