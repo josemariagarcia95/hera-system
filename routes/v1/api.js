@@ -55,7 +55,7 @@ router.use( function( req, res, next ) {
 		} );
 	} else if ( !users.userExists( req.cookies.userId ) ) {
 		res.status( 401 ).send( {
-			status: 'User doesn\'t exist. Expired session. Please, send request to "/" first.'
+			status: 'User doesn\'t exist. Expired session. Please, send request to / first.'
 		} );
 	} else {
 		next();
@@ -65,9 +65,10 @@ router.use( function( req, res, next ) {
 /**
  * <strong>ENDPOINT.</strong><br/>
  * The <tt>/init</tt> endpoint allows us to initialize the whole system.<br/>
- * The setting information can be received through the request itself (<code>settings</code> parameter),
+ * The setting information can be received through the request itself (<code><strong>settings</strong></code> parameter),
  *  or through a file, in which case the path to said file must be indicated in the request
- * (<code>settingsPath</code>).
+ * (<code><strong>settingsPath</strong></code>). Please keep in mind that the route to the file starts at the root of the project
+ * (<code>tot-system/...</code>).
  * @function /init
  */
 router.post( '/init', function( req, res, next ) {
@@ -141,12 +142,21 @@ router.post( '/setup', function( req, res, next ) {
 	const preferences = req.body;
 	console.log( preferences );
 	if ( Object.keys( preferences ).length !== 0 ) {
-		const detectorsAffected = users.getUser( req.cookies.userId ).setupDetector( preferences );
-		res.status( 200 ).send( {
-			status: 'OK',
-			detectorsAffected: detectorsAffected,
-			detectorsUsed: detectorHandler.lengthDetectors()
-		} );
+		try {
+			const user = users.getUser( req.cookies.userId );
+			const detectorsAffected = user.detectorHandler.setupDetectors( preferences );
+			res.status( 200 ).send( {
+				status: 'OK',
+				detectorsAffected: detectorsAffected,
+				detectorsUsed: user.detectorHandler.lengthDetectors()
+			} );
+		} catch ( errorData ) {
+			console.error( errorData );
+			res.status( 400 ).send( {
+				status: 'error',
+				error: errorData
+			} );
+		}
 	} else {
 		res.status( 400 ).send( 'Preferences not set. Body request is empty. Every initial detector will be used' );
 	}

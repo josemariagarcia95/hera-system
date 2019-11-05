@@ -71,15 +71,17 @@ const userHandler = {
 	 * <code><strong>setupDetectors</strong></code> function in
 	 * <code><strong>[DetectorHandler]{@link module:Core~DetectorHandler} </strong></code>and returned the number
 	 * of detectors affected by the filtering.
-	 * @function setupDetectors
-	 * @param {Object} preferences - Detectors setup information
+	 * @function setupUserDetector
+	 * @param {string} userId - User unique id.
+	 * @param {Object} preferences - Detectors setup information.
 	 * @return {number} Number of filtered (removed) detectors.
 	 */
-	setupDetectors: function( preferences ) {
-		return this.detectorHandler.setupDetectors( preferences );
+	setupUserDetector: function( userId, preferences ) {
+		const detectorsAffected = this.getUser( userId ).detectorHandler.setupDetectors( preferences );
+		return detectorsAffected ? detectorsAffected : 0;
 	},
 	/**
-	 * 
+	 *
 	 * @function getDetectorLength
 	 * @return {number} Total number of detectors.
 	 */
