@@ -4,6 +4,14 @@
  */
 
 const mean = require( './operations' ).mean;
+
+/**
+ * @property {Object} strategies - Collection of strategies to aggregate PAD results. In order to
+ *  aggregate new strategies, just add a new item to this object, and implement a function which
+ * receives an array of triplets and returns a single triplet. Then, add another case to the switch in the
+ * [getMergingDataStrategy]{@link module:Merge~getMergingDataStrategy} so there is a case which returns
+ * this brand new strategy.
+ */
 const strategies = {
 	default: function( tripletsArray ) {
 		const pleasure = tripletsArray.map( ( element ) => {
@@ -19,6 +27,13 @@ const strategies = {
 	}
 };
 
+/**
+ * Retrieves the function to use in the PAD results merging process.
+ * @function getMergingDataStrategy
+ * @param {string} strategyName - String with the name of a strategy. This string should match one of
+ * the cases in the switch-case block of this function.
+ * @return {Function}
+ */
 const getMergingDataStrategy = function( strategyName ) {
 	let strategy = strategies.default;
 	switch ( strategyName ) {

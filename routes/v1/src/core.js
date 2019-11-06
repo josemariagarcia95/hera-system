@@ -92,7 +92,8 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 /**
  * @function setupDetectors
  * @memberof DetectorHandler
- * @param {Object} preferences - JSON object with the setting information (see [/setup]{@link module:API~/setup})
+ * @param {Object} preferences - JSON object with the setting information (see
+ * [/setup]{@link module:API~/setup})
  * @return {number} Number of filtered (removed) detectors.
  */
 DetectorHandler.prototype.setupDetectors = function( preferences ) {

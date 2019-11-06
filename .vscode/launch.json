@@ -27,12 +27,17 @@
 			"name": "Iniciar API",
 			"program": "${workspaceFolder}\\bin\\www"
 		},
-
 		{
 			"type": "node",
 			"request": "launch",
 			"name": "Iniciar programa",
 			"program": "${workspaceFolder}\\bin\\www"
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Iniciar Tests Integracion",
+			"program": "${workspaceFolder}\\test\\automatic-use-case"
 		}
 	]
 }

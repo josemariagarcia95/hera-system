@@ -242,6 +242,7 @@ router.post( '/results', function( req, res, next ) {
 			req.body.localStrategy,
 			req.body.globalStrategy
 		);
+		res.status( 200 ).send( mergedResults );
 	} catch ( error ) {
 		console.error( error );
 		res.status( 400 ).send( {
@@ -249,7 +250,6 @@ router.post( '/results', function( req, res, next ) {
 			error: error
 		} );
 	}
-	res.status( 200 ).send( mergedResults );
 } );
 
 router.get( '/results/:channel/:type', function( req, res, next ) {

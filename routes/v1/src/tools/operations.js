@@ -3,7 +3,12 @@
  * @module Operations
  */
 
-const mean = ( list ) => list.reduce( ( a, b ) => a + b, 0 ) / list.length;
+const mean = function( list ) {
+	if ( list.length !== 0 ) {
+		return list.reduce( ( a, b ) => a + b, 0 ) / list.length;
+	}
+	return 0;
+};
 
 /**
  *  Normalize emotion results to PAD values (from 0 to 1)
