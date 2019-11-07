@@ -236,19 +236,26 @@ router.post( '/analyse', function( req, res, next ) {
  */
 router.post( '/results', function( req, res, next ) {
 	console.log( '****************************RESULTS****************************' );
-	try {
-		const mergedResults = users.getUser( req.cookies.userId ).detectorHandler.mergeResults(
-			req.body.channelsToMerge,
-			req.body.localStrategy,
-			req.body.globalStrategy
-		);
-		res.status( 200 ).send( mergedResults );
-	} catch ( error ) {
-		console.error( error );
+	if ( !req.body.channelsToMerge ) {
 		res.status( 400 ).send( {
 			status: 'error',
-			error: error
+			error: 'No channels especified, no fusion performed'
 		} );
+	} else {
+		try {
+			const mergedResults = users.getUser( req.cookies.userId ).detectorHandler.mergeResults(
+				req.body.channelsToMerge,
+				req.body.localStrategy,
+				req.body.globalStrategy
+			);
+			res.status( 200 ).send( mergedResults );
+		} catch ( error ) {
+			console.error( error );
+			res.status( 400 ).send( {
+				status: 'error',
+				error: error
+			} );
+		}
 	}
 } );
 

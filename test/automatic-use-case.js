@@ -1,6 +1,8 @@
 /* eslint-disable indent */
 /* eslint-disable require-jsdoc */
-const request = require( 'request' );
+const request = require( 'request' ).defaults( {
+	jar: true
+} );
 const util = require( 'util' );
 
 /*
@@ -18,8 +20,7 @@ const options = {
 const get = util.promisify( request.get );
 const post = util.promisify( request.post );
 console.log( 'Test file' );
-//init();
-let cookie = '';
+
 getCookie();
 
 function getCookie() {
@@ -29,7 +30,9 @@ function getCookie() {
 			console.log( 'Success' );
 			//Access the request headers and extract the user id using regex
 			//The id is the set of characters between a '=' and a ';'.
-			cookie = res.headers[ 'set-cookie' ][ 0 ].match( /=([a-zA-Z0-9]*);/ )[ 1 ];
+			//request.cookie adds the cookie to the request cookie jar, so we don't need to set it
+			//on every request.
+			request.cookie( 'userId=' + res.headers[ 'set-cookie' ][ 0 ].match( /=([a-zA-Z0-9]*);/ )[ 1 ] );
 		} )
 		.catch( ( reason ) => {
 			console.log( 'Error' );
@@ -40,9 +43,6 @@ function getCookie() {
 function init() {
 	console.log( 'Init Endpoint' );
 	post( {
-			header: {
-				Cookie: 'userId=' + cookie + ';'
-			},
 			url: 'http://localhost:3000/api/v1/init',
 			body: {
 				settingsFile: 'credentials.json'
@@ -100,6 +100,7 @@ function results() {
 	post( {
 		url: 'http://localhost:3000/api/v1/results',
 		body: {
+			channelsToMerge: [ 'face' ],
 			localStrategy: 'default',
 			globalStrategy: 'default'
 		},
