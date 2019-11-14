@@ -1,8 +1,8 @@
 # ![logo](/logo/tot-64.png) Tot system
-Two-level multimodal system to detect emotions..
+Two-level multimodal system to **detect emotions and aggregate results**. Tot system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in the device), gathering the results and aggregate them on command.
 
-## Lanching the API
-Lanching the API is quite simple. Once you've downloaded the repository, just run a
+## Lanching Tot
+Lanching Tot is quite simple. Once you've downloaded the repository, just run a
 
 ```
 npm install
@@ -11,8 +11,59 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As a express app, it runs on port 3000, but you can change this easily at the `www` file in `/bin/`. 
+to start the API. As an express app, it runs on **port 3000**, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) Tot in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely language agnostic.
+
+```javascript
+// Javascript (client)
+$.ajax({
+    url : 'http://localhost:3000/api/v1/init',
+    type : 'POST',
+    data : {
+        'settingsPath' : './data.json'
+    },
+    dataType:'json',
+    success : function(data) {              
+		//...
+	}
+});
+```
+
+```javascript
+// JavaScript (Server)
+request({
+	url: 'http://localhost:3000/api/v1/init',
+	type: 'POST',
+	body: {
+		settingsFile: 'credentials.json'
+	},
+	json: true
+}, function(error, response, body){
+	//...
+});
+```
+
+```python
+# Python
+import requests
+url = 'http://localhost:3000/api/v1/init'
+body = {'settingsFile': 'credentials.json'}
+x = requests.post(url, data = myobj)
+```
+
+```java
+// Java
+RequestBody formBody = new FormBody.Builder()
+	.add("settingsFile", "credentials.json")
+	.build();
+
+Request request = new Request.Builder()
+	.url("http://localhost:3000/api/v1/init")
+	.post(formBody)
+	.build();
+```
+
 The root of the request will be always `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
+
 
 So, after starting the service, we just have to make an `init` request. **The API does not perform any action by just starting it up**. The `/init` endpoint needs to be called in order to actually start any operation.
 
