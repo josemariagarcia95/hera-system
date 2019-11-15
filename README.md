@@ -16,7 +16,7 @@ to start the API. As an express app, it runs on **port 3000**, but you can chang
 ```javascript
 // Javascript (client)
 $.ajax({
-    url : 'http://localhost:3000/api/v1/init',
+    url : 'http://localhost:3000/api/v1/',
     type : 'POST',
     data : {
         'settingsPath' : './data.json'
@@ -45,7 +45,7 @@ request({
 ```python
 # Python
 import requests
-url = 'http://localhost:3000/api/v1/init'
+url = 'http://localhost:3000/api/v1/setup'
 body = {'settingsFile': 'credentials.json'}
 x = requests.post(url, data = myobj)
 ```
@@ -57,25 +57,28 @@ RequestBody formBody = new FormBody.Builder()
 	.build();
 
 Request request = new Request.Builder()
-	.url("http://localhost:3000/api/v1/init")
+	.url("http://localhost:3000/api/v1/analyse")
 	.post(formBody)
 	.build();
 ```
 
-The root of the request will be always `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
-
-
-So, after starting the service, we just have to make an `init` request. **The API does not perform any action by just starting it up**. The `/init` endpoint needs to be called in order to actually start any operation.
-
-```
-GET http://localhost:3000/api/v1/init
+```ruby
+require 'httparty'
+HTTParty.post("http://localhost:3000/api/v1/init", body: {'settingsFile': 'credentials.json'})
 ```
 
-This method will read the `credentials.json` file, initialise each detector stated in that file and perform a benchmark task for each one. This task consists of, for each detector, analyse every file contained in its corresponding `benchmark-files`	and calculate an average response time, saved in the `delay` attribute of the detector.
+Unless you change the directory, the root of the request will always be `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
 
-At this point, the Tot system is ready to work. You're free to send requests to the `/analyse` and `/results` endpoints.
+After starting the server, the workflow would be:
 
-Additionally, you could send a `/setup` request to filter the slowest detectors, for instance, or to change the type of detectors you want to use. 
+* **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with this endpoint without including this id in the request will return an error.  
+* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing them to request
+* emotion recognition for media files and the aggregation of the consequent results.
+* Requesting a media analyse looking for emotions. Having their unique id, the user will be able to send a file (or a local/remote path to it) to the server to request en emotion recognition over it in the `/analyse` endpoint. **Requests to this endpoint don't return the results to these analysis**. 
+* **Aggregating results**. Using the `/results` endpoint the users can request the results to the server in several formats: aggregated, grouped by channel, results of a single detector, in PAD (translated) or RAW (as the detector produces them) format, etc.   
+* **_(Optionally)_ Filtering detectors**. After creating the detectors (`/init`), the users can filter out detectors in the `/setup` endpoint based on several criteria, like the service latency, the kind of media it supports, etc. 
+
+See the next section to read more details about each endpoint.
 
 ## About the API
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
