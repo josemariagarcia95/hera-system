@@ -18,11 +18,7 @@ to start the API. As an express app, it runs on **port 3000**, but you can chang
 $.ajax({
     url : 'http://localhost:3000/api/v1/',
     type : 'POST',
-    data : {
-        'settingsPath' : './data.json'
-    },
-    dataType:'json',
-    success : function(data) {              
+    success : function( data ) {              
 		//...
 	}
 });
@@ -37,7 +33,7 @@ request({
 		settingsFile: 'credentials.json'
 	},
 	json: true
-}, function(error, response, body){
+}, function( error, response, body ){
 	//...
 });
 ```
@@ -46,14 +42,16 @@ request({
 # Python
 import requests
 url = 'http://localhost:3000/api/v1/setup'
-body = {'settingsFile': 'credentials.json'}
-x = requests.post(url, data = myobj)
+body = { 'delay': 3000 }
+x = requests.post( url, data = myobj )
 ```
 
 ```java
 // Java
 RequestBody formBody = new FormBody.Builder()
-	.add("settingsFile", "credentials.json")
+	.add("mediaType", "image")
+	.add("lookingFor", "['face']")
+	.add("mediaPath", "C:\\Users\\user\\images\\image.jpg")
 	.build();
 
 Request request = new Request.Builder()
@@ -64,7 +62,7 @@ Request request = new Request.Builder()
 
 ```ruby
 require 'httparty'
-HTTParty.post("http://localhost:3000/api/v1/init", body: {'settingsFile': 'credentials.json'})
+HTTParty.post("http://localhost:3000/api/v1/results")
 ```
 
 Unless you change the directory, the root of the request will always be `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
