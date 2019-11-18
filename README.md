@@ -11,7 +11,7 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As an express app, it runs on **port 3000**, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) Tot in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely language agnostic.
+to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) Tot in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**.
 
 ```javascript
 // Javascript (client)
@@ -43,7 +43,7 @@ request({
 import requests
 url = 'http://localhost:3000/api/v1/setup'
 body = { 'delay': 3000 }
-x = requests.post( url, data = myobj )
+x = requests.post( url, data = body )
 ```
 
 ```java
@@ -61,6 +61,7 @@ Request request = new Request.Builder()
 ```
 
 ```ruby
+# Ruby
 require 'httparty'
 HTTParty.post("http://localhost:3000/api/v1/results")
 ```
@@ -69,10 +70,9 @@ Unless you change the directory, the root of the request will always be `/api/vX
 
 After starting the server, the workflow would be:
 
-* **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with this endpoint without including this id in the request will return an error.  
-* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing them to request
-* emotion recognition for media files and the aggregation of the consequent results.
-* Requesting a media analyse looking for emotions. Having their unique id, the user will be able to send a file (or a local/remote path to it) to the server to request en emotion recognition over it in the `/analyse` endpoint. **Requests to this endpoint don't return the results to these analysis**. 
+* **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with these endpoints without including this unique id in the request will return an error (`Session wasn't initialized. Send request to "/" first`).  
+* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing them to request emotion recognition for media files and the aggregation of the consequent results.
+* **Requesting a media analyse looking for emotions**. Having their unique id, the user will be able to send a file (or a local/remote path to it) to the server to request en emotion recognition over it in the `/analyse` endpoint. **Requests to this endpoint don't return the results to these analysis**. 
 * **Aggregating results**. Using the `/results` endpoint the users can request the results to the server in several formats: aggregated, grouped by channel, results of a single detector, in PAD (translated) or RAW (as the detector produces them) format, etc.   
 * **_(Optionally)_ Filtering detectors**. After creating the detectors (`/init`), the users can filter out detectors in the `/setup` endpoint based on several criteria, like the service latency, the kind of media it supports, etc. 
 
