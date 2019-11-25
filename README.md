@@ -1,5 +1,5 @@
 # ![logo](/logo/tot-64.png) Tot system
-Two-level multimodal system to **detect emotions and aggregate results**. Tot system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in the device), gathering the results and aggregate them on command.
+Two-level multimodal system to **detect emotions and aggregate results**. ![logo16](/logo/tot-16.png) **Tot** system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in the device), gathering the results and aggregate them on command.
 
 ## Lanching Tot
 Lanching Tot is quite simple. Once you've downloaded the repository, just run a
@@ -11,7 +11,7 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) Tot in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**.
+to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**.
 
 ```javascript
 // Javascript (client)
@@ -81,30 +81,33 @@ See the next section to read more details about each endpoint.
 ## About the API
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
 
+* `/`
+  * `GET`. Generates an unique id using [uniqid](https://www.npmjs.com/package/uniqid) and returns it to the user in a cookie. **CALLING THIS ENDPOINT IS MANDATORY TO BE ABLE TO USE THE API**.
 * `/init`
-	* `POST`. Inits detectors for a user, using setting information either sent in the request or stored in some setting file. Initializes each emotion detector and performs a benchmarking task to test the state of the network and the detectors. See [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)
+	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified.
+* `/analyse`
+	* `POST`. Endpoint used to analyse media files. The request contains the path to the file which holds the affective information, the type of information holded in that file and the kind of information that the API must look for. 
+		* `mediaType {Array}`: Kind of media which will be sent. Options can be "image", "video", "sound" and "text". However, any other type can be added to the API, since the media types that the API supports are specified on the `/init` endpoint, in the `media` attribute of each detector. 
+		* `lookingFor {String}`: Feature we want to analyse. Options can be "face", "voice", "signal" and "body". Again, the capabilities of the API regarding this parameter are specified on the `/init` endpoint, in the `category` of each detector.
+		* `mediaPath {String}`: Path pointing to the file that must be analysed. This path can be either local or remote. _Each detector must handle this path according to its characteristics_. For instance, if you have a detector which can only analyse online resources, and you want it to analyse some local file (some image took with the webcam, a sound file recorded with the microphone), you'll have to upload somewhere inside the `extractEmotions` callback of said detector.
+
+**IMPORTANT. THIS ENDPOINT DOESN'T RETURN THE AFFECTIVE OUTPUT RESULTING FROM ANALYSING SOME FILE. IN ORDER TO RETRIEVE THAT DATA, THE `/results` MUST BE USED.**
+
+* `/results`
+  * `GET`. This endpoint retrieves a single PAD result, as a all th results in PAD form. This include each individual result and the fusion of all the results.
 * `/setup`
 	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). `/setup` receives, in the request body, up to 3 parameters.
 		* `type`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category.
 		* `realTime`: boolean attribute representing the `realTime` attribute. Only detectors with a matching value of it will be kept.
 		* `delay`: response time threshold. Detectors whose delay attribute is bigger than the one in the `/setup` request will be deleted. 
-* `/analyse`
-	* `POST`. Endpoint used to analyse media files. The request contains the path pointing to the file which holds the affective information, the type of information holded in that file and the kind of information that the API must look for. 
-		* `mediaType`: Kind of media which will be sent. Options can be "image", "video", "sound" and "text".
-		* `lookingFor`: Feature we want to analyse. Options can be "face", "voice", "signal" and "body".
-		* `mediaPath`: Path pointing to the file that must be analysed. This path can be either local or remote. Each detector must handle this path according to its characteristics.
-
-	**IMPORTANT. THIS ENDPOINT DOESN'T RETURN THE AFFECTIVE OUTPUT RESULTING FROM ANALYSING SOME FILE. IN ORDER TO RETRIEVE THAT DATA, THE `/results` MUST BE USED.**
-* `/results`
-  * `GET`. This endpoint retrieves all the results in PAD form. This include each individual result and the fusion of all the results.
+<!---
 * `/results/:channel`
   * `GET`. This endpoint retrieves all the results in PAD form of a single channel. This include each individual result and the fusion of all the results in that channel. Channels are defined by the different category values in the `credentials.json` file.
 * `/results-raw`
   * `GET`. As `/results`, but returns the results as they are produced by each detector in their own format. Since formats may not be compatible, fusion is not carried out.
 * `/results-raw/:channel`. 
   *  `GET`. As in `/results-raw`, but just for one channel.
-
-
+-->
 # Documentation
 
 You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
@@ -159,8 +162,8 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 
 # Appendix
 
-## credentials.json sample file
-`credentials.json.sample`
+## settings.json sample file
+`settings.json.sample`
 ```json
 	{
 		"detector-name-that-will-become-the-id": {
@@ -172,6 +175,12 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 				"key": "you may add all the data/optios you need in the otherOptions object"
 			},
 			"callbacks": "./route/to/the/file/where/the/callbacks/are/defined.js"
+		},
+		"detector-name-that-will-become-the-id-2": {
+			...
+		},
+		"detector-name-that-will-become-the-id-3": {
+			...
 		}
 	}
 ```

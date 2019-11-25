@@ -6,7 +6,7 @@ const querystring = require( 'querystring' );
 let accessToken = '';
 const body = {
 	grant_type: 'client_credentials',
-	apiKey: '790f25eb-4fc1-4058-bc3b-7a700d84294b'
+	apiKey: 'f5a2d998-132e-41c3-b4f4-e36822e3da9a'
 };
 
 const options = {
