@@ -165,24 +165,24 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 ## settings.json sample file
 `settings.json.sample`
 ```json
-	{
-		"detector-name-that-will-become-the-id": {
-			"category": "face/voice/body/eda/...",
-			"media": [ "types", "of", "media", "the service", "accepts", "for", "analysis", "such us", "image", "video", "text", "sound", "..." ],
-			"realTime": boolean,
-			"url": "https://endpoint-of-the-service-if-any",
-			"otherOptions": {
-				"key": "you may add all the data/optios you need in the otherOptions object"
-			},
-			"callbacks": "./route/to/the/file/where/the/callbacks/are/defined.js"
+{
+	"detector-name-that-will-become-the-id": {
+		"category": "face/voice/body/eda/...",
+		"media": [ "types", "of", "media", "the service", "accepts", "for", "analysis", "such us", "image", "video", "text", "sound", "..." ],
+		"realTime": boolean,
+		"url": "https://endpoint-of-the-service-if-any",
+		"otherOptions": {
+			"key": "you may add all the data/optios you need in the otherOptions object"
 		},
-		"detector-name-that-will-become-the-id-2": {
-			...
-		},
-		"detector-name-that-will-become-the-id-3": {
-			...
-		}
+		"callbacks": "./route/to/the/file/where/the/callbacks/are/defined.js"
+	},
+	"detector-name-that-will-become-the-id-2": {
+		...
+	},
+	"detector-name-that-will-become-the-id-3": {
+		...
 	}
+}
 ```
 
 

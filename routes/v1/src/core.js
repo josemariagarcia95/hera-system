@@ -69,24 +69,28 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 	} else {
 		this.detectors[ detectorObj.category ] = [ detectorObj ];
 	}
-	fs.readdirSync( __dirname + '\\detectors\\' + detectorObj.category +
-		'\\benchmark-files' ).forEach( function( fileName, index, array ) {
-		let startTime = present();
-		const times = [];
-		const callback = function( data ) {
-			times.push( present() - startTime );
-			startTime = present();
-			if ( index + 1 === array.length ) {
-				detectorObj.delay = mean( times );
-				detectorObj.realTime = detectorObj.delay < realTimeThreshold;
-				detectorObj.cleanResults();
-			}
-		};
-		console.log( __dirname + '\\detectors\\' + detectorObj.category +
-			'\\benchmark-files\\' + fileName );
-		detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
-			'\\benchmark-files\\' + fileName, callback );
-	} );
+	//If there are benchmark-files, the benchmarking task starts
+	if ( fs.existsSync( __dirname + '\\detectors\\' + detectorObj.category +
+			'\\benchmark-files' ) ) {
+		fs.readdirSync( __dirname + '\\detectors\\' + detectorObj.category +
+			'\\benchmark-files' ).forEach( function( fileName, index, array ) {
+			let startTime = present();
+			const times = [];
+			const callback = function( data ) {
+				times.push( present() - startTime );
+				startTime = present();
+				if ( index + 1 === array.length ) {
+					detectorObj.delay = mean( times );
+					detectorObj.realTime = detectorObj.delay < realTimeThreshold;
+					detectorObj.cleanResults();
+				}
+			};
+			console.log( __dirname + '\\detectors\\' + detectorObj.category +
+				'\\benchmark-files\\' + fileName );
+			detectorObj.extractEmotions( detectorObj, __dirname + '\\detectors\\' + detectorObj.category +
+				'\\benchmark-files\\' + fileName, callback );
+		} );
+	}
 };
 
 /**
