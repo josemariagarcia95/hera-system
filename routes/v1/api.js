@@ -75,7 +75,10 @@ router.post( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
 	const promises = [];
 	let detectorsData = {};
+	console.log( 'HOLA INIT' );
+	console.log( req.body );
 	if ( req.body.settings ) {
+		console.log( req.body.settings );
 		detectorsData = req.body.settings;
 	} else if ( req.body.settingsFile ) {
 		detectorsData = JSON.parse(

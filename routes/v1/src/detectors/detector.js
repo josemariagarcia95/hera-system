@@ -23,7 +23,7 @@ function Detector( id, category, media, realTime, url, otherOptions ) {
 	this.category = category;
 	this.media = media;
 	this.realTime = realTime;
-	this.delay = 1000000000;
+	this.delay = 500;
 	this.url = url;
 	this.otherOptions = otherOptions;
 	this.rawResults = [];
