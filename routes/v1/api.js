@@ -64,6 +64,17 @@ router.use( function( req, res, next ) {
 } );
 
 /**
+ * If the incoming request is a CORS request, the body is parsed to a JSON object.
+ * @name CORS Parsing Middleware
+ */
+router.use( function( req, res, next ) {
+	if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
+		req.body = qs.parse( req.body );
+	}
+	next();
+} );
+
+/**
  * <strong>ENDPOINT.</strong><br/>
  * The <tt>/init</tt> endpoint allows us to initialize the whole system.<br/>
  * The setting information can be received through the request itself (<code><strong>settings</strong></code> parameter),
@@ -76,7 +87,6 @@ router.post( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
 	const promises = [];
 	let detectorsData = {};
-	console.log( 'HOLA INIT' );
 	//qs.parse(req.body when request is url-encoded)
 	if ( req.body.settings ) {
 		console.log( req.body.settings );
@@ -85,16 +95,17 @@ router.post( '/init', function( req, res, next ) {
 		detectorsData = JSON.parse(
 			fs.readFileSync( './' + req.body.settingsFile )
 		);
-	} else if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
-		const urlEncodedBody = qs.parse( req.body );
-		if ( urlEncodedBody.settings ) {
-			detectorsData = urlEncodedBody.settings;
-		} else if ( urlEncodedBody.settingsFile ) {
-			detectorsData = JSON.parse(
-				fs.readFileSync( './' + urlEncodedBody.settingsFile )
-			);
-		}
 	}
+	/* else if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
+			const urlEncodedBody = qs.parse( req.body );
+			if ( urlEncodedBody.settings ) {
+				detectorsData = urlEncodedBody.settings;
+			} else if ( urlEncodedBody.settingsFile ) {
+				detectorsData = JSON.parse(
+					fs.readFileSync( './' + urlEncodedBody.settingsFile )
+				);
+			}
+		}*/
 	//If there is data in detectorsData, we create the detectors
 	if ( Object.keys( detectorsData ).length ) {
 		const detectorHandler = new core.DetectorHandler();
