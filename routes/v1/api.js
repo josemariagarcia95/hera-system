@@ -3,6 +3,7 @@
  * @module API
  */
 const fs = require( 'fs' );
+const qs = require( 'qs' );
 const core = require( './src/core' );
 const users = require( './src/users.js' );
 const uniqid = require( 'uniqid' );
@@ -76,7 +77,7 @@ router.post( '/init', function( req, res, next ) {
 	const promises = [];
 	let detectorsData = {};
 	console.log( 'HOLA INIT' );
-	console.log( req.body );
+	//qs.parse(req.body when request is url-encoded)
 	if ( req.body.settings ) {
 		console.log( req.body.settings );
 		detectorsData = req.body.settings;
@@ -84,6 +85,15 @@ router.post( '/init', function( req, res, next ) {
 		detectorsData = JSON.parse(
 			fs.readFileSync( './' + req.body.settingsFile )
 		);
+	} else if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
+		const urlEncodedBody = qs.parse( req.body );
+		if ( urlEncodedBody.settings ) {
+			detectorsData = urlEncodedBody.settings;
+		} else if ( urlEncodedBody.settingsFile ) {
+			detectorsData = JSON.parse(
+				fs.readFileSync( './' + urlEncodedBody.settingsFile )
+			);
+		}
 	}
 	//If there is data in detectorsData, we create the detectors
 	if ( Object.keys( detectorsData ).length ) {
