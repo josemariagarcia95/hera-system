@@ -96,16 +96,6 @@ router.post( '/init', function( req, res, next ) {
 			fs.readFileSync( './' + req.body.settingsFile )
 		);
 	}
-	/* else if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
-			const urlEncodedBody = qs.parse( req.body );
-			if ( urlEncodedBody.settings ) {
-				detectorsData = urlEncodedBody.settings;
-			} else if ( urlEncodedBody.settingsFile ) {
-				detectorsData = JSON.parse(
-					fs.readFileSync( './' + urlEncodedBody.settingsFile )
-				);
-			}
-		}*/
 	//If there is data in detectorsData, we create the detectors
 	if ( Object.keys( detectorsData ).length ) {
 		const detectorHandler = new core.DetectorHandler();

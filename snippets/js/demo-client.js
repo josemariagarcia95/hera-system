@@ -36,8 +36,8 @@ $( function() {
 						"realTime": false,
 						"url": "https://api-us.faceplusplus.com/facepp/v3/detect",
 						"otherOptions": {
-							"api_key": "lWMTqYOBCFvPIqRrcBpdBX6FTyMNdi7Y",
-							"api_secret": "fE6OCbIshDawTnXZZzm78_eWfAdG9jQz"
+							"api_key": "**************************",
+							"api_secret": "************************"
 						},
 						"callbacks": "./src/detectors/face/facepp.js"
 					}
