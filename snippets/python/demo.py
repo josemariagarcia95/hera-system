@@ -1,8 +1,11 @@
+from time import sleep
 import requests as request
 import json
 
+# First endpoint to get the cookie
 r = request.get('http://localhost:3000/api/v1/')
-user_id_cookies = r.cookies
+cookies = r.cookies
+print(r.text)
 
 init_data = {
     'settings': {
@@ -29,7 +32,41 @@ init_data = {
         }
     }
 }
-
+# Init endpoint, starts the detectors
 r = request.post('http://localhost:3000/api/v1/init',
                  json=init_data,
-                 cookies=user_id_cookies)
+                 cookies=cookies)
+print(r.text)
+
+sleep(3)
+
+setup_data = {'type': ['face'], 'delay': '3000'}
+
+# Setup endpoint, filter detectors by their characteristics
+r = request.post('http://localhost:3000/api/v1/setup',
+                 json=setup_data,
+                 cookies=cookies)
+print(r.text)
+
+analyse_data = {
+    'mediaType': 'image',
+    'lookingFor': 'face',
+    'mediaPath': 'http://josemariagarcia.es/img/perfil.jpg'
+}
+
+# Analyse endpoint, order the analyse of a picture
+r = request.post('http://localhost:3000/api/v1/analyse',
+                 json=analyse_data,
+                 cookies=cookies)
+print(r.text)
+
+sleep(3)
+
+results_data = {
+    'channelsToMerge': [ 'face' ],
+    'localStrategy': 'default',
+    'globalStrategy': 'default'
+}
+
+r = request.post('http://localhost:3000/api/v1/results', json=results_data, cookies=cookies)
+print(r.text)

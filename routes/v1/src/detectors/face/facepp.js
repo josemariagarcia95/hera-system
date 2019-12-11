@@ -31,7 +31,8 @@ module.exports.extractEmotions = function( context, media, callback = () => {} )
 			return error;
 		}
 		if ( body ) {
-			const results = JSON.parse( body )[ 'faces' ][ 0 ][ 'attributes' ][ 'emotion' ];
+			const parsedBody = JSON.parse( body );
+			const results = parsedBody[ 'faces' ][ 0 ][ 'attributes' ][ 'emotion' ];
 			context.addResults( results );
 			callback( results );
 		}
