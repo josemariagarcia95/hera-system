@@ -1,5 +1,5 @@
 # ![logo](/logo/tot-64.png) Tot system
-Two-level multimodal system to **detect emotions and aggregate results**. ![logo16](/logo/tot-16.png) **Tot** system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in the device), gathering the results and aggregate them on command.
+Tot is a two-level multimodal emotion detection system prepared to **manage different emotion detectors in one place, detect emotions using said recognizers and aggregate results from each emotion detection service**. ![logo16](/logo/tot-16.png) The **Tot** system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in a device), gathering the results and aggregate them on command.
 
 ## Lanching Tot
 Lanching Tot is quite simple. Once you've downloaded the repository, just run a
@@ -11,7 +11,7 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**.
+to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**. The snippets below show different examples of how to communicate with Tot using different programming languages. While these snippets are written in JavaScript, Python, Java and Ruby, you can use whatever programming language you want, as long as it supports communications via HTTP requests.
 
 ```javascript
 // Javascript (client)
@@ -68,25 +68,28 @@ HTTParty.post("http://localhost:3000/api/v1/results")
 
 Unless you change the directory, the root of the request will always be `/api/vX/`, being `X` the number of the version you want to use. For example, if you want to use `v1`, an `init` request would have `http://localhost:3000/api/v1/init` as `url`.
 
-After starting the server, the workflow would be:
+Once the server is running, the workflow would be as follows:
 
-* **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with these endpoints without including this unique id in the request will return an error (`Session wasn't initialized. Send request to "/" first`).  
-* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing them to request emotion recognition for media files and the aggregation of the consequent results.
-* **Requesting a media analyse looking for emotions**. Having their unique id, the user will be able to send a file (or a local/remote path to it) to the server to request en emotion recognition over it in the `/analyse` endpoint. **Requests to this endpoint don't return the results to these analysis**. 
-* **Aggregating results**. Using the `/results` endpoint the users can request the results to the server in several formats: aggregated, grouped by channel, results of a single detector, in PAD (translated) or RAW (as the detector produces them) format, etc.   
-* **_(Optionally)_ Filtering detectors**. After creating the detectors (`/init`), the users can filter out detectors in the `/setup` endpoint based on several criteria, like the service latency, the kind of media it supports, etc. 
+* **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with these endpoints without including this unique id in the request will return an error (`Session wasn't initialized. Send request to "/" first`). This id is linked to an **user object** which will store the detectors' proxies, the data returned by these ones, etc.
+* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing you to request emotion recognition for media files and the aggregation of the consequent results.
+* **Requesting a media analyse looking for emotions**. Having your unique id, you will be able to request an emotion recognition over a media resource. **Requests to this endpoint don't return the results to these analysis**. 
+* **Aggregating results**. Using the `/results` endpoint you can request the results to the server in several formats: aggregated, grouped by channel, results of a single detector, in PAD (translated) or RAW (as the detector produces them) format, etc.   
+* **_(Optionally)_ Filtering detectors**. After creating the detectors, you can optionally filter out detectors in the `/setup` endpoint based on several criteria, like the service latency, the kind of media it supports, etc. 
 
 See the next section to read more details about each endpoint.
 
 ## About the API
-The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the handlers of each endpoint:
+The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the middleware to handle each endpoint of the API. This middleware is imported in the API entry point, (`app.js` file).
 
 * `/`
-  * `GET`. Generates an unique id using [uniqid](https://www.npmjs.com/package/uniqid) and returns it to the user in a cookie. **CALLING THIS ENDPOINT IS MANDATORY TO BE ABLE TO USE THE API**.
+    * `GET`. Generates an user object with an unique id using [uniqid](https://www.npmjs.com/package/uniqid) and returns this id to the user in a cookie. **CALLING THIS ENDPOINT IS MANDATORY TO BE ABLE TO USE THE API**.
+        * This endpoint has no parameters.
 * `/init`
-	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified.
+	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified. If none of these parameters are present in the request, no detector proxy will be created. If they are both specified, only `settings` will be used.
+    	* `settings {JSON}`. JSON object following the [aforementioned format](#settings.json-sample-file).
+    	* `settingsPath {string}`. Path to file containing the setting information. Keep in mind that the route to the file starts at the root of the project(`tot-system/...`).
 * `/analyse`
-	* `POST`. Endpoint used to analyse media files. The request contains the path to the file which holds the affective information, the type of information holded in that file and the kind of information that the API must look for. 
+	* `POST`. Endpoint used to analyse media files. The request contains the path to the file which holds the affective information, the type of information that the file contains and the kind of information that the API must look for. 
 		* `mediaType {Array}`: Kind of media which will be sent. Options can be "image", "video", "sound" and "text". However, any other type can be added to the API, since the media types that the API supports are specified on the `/init` endpoint, in the `media` attribute of each detector. 
 		* `lookingFor {String}`: Feature we want to analyse. Options can be "face", "voice", "signal" and "body". Again, the capabilities of the API regarding this parameter are specified on the `/init` endpoint, in the `category` of each detector.
 		* `mediaPath {String}`: Path pointing to the file that must be analysed. This path can be either local or remote. _Each detector must handle this path according to its characteristics_. For instance, if you have a detector which can only analyse online resources, and you want it to analyse some local file (some image took with the webcam, a sound file recorded with the microphone), you'll have to upload somewhere inside the `extractEmotions` callback of said detector.
@@ -111,6 +114,10 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 # Documentation
 
 You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
+
+## `src/users.js`
+
+
 
 ## `src/core.js`
 

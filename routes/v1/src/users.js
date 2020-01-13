@@ -2,8 +2,14 @@
  * Users module.
  * @module Users
  */
-const core = require( './core' );
+const core = require('./core');
 
+/**
+ * This object is used to handle every user object. Each user has an unique id, a {@link DetectorHandler} object to manage the 
+ * detectors they need, an expiration date and a fixed lifespan.
+ * @constant {Object}
+ * @name userHandler
+ */
 const userHandler = {
 	users: [],
 	/**
@@ -15,16 +21,16 @@ const userHandler = {
 	 * @param {number} uniqueID - Unique id value generated with uniqid npm module.
 	 * @return {number} Unique user id.
 	 */
-	addUser: function( uniqueID ) {
+	addUser: function (uniqueID) {
 		const newUser = {
 			id: uniqueID,
 			detectorHandler: {},
-			expires: new Date( Date.now() + 5000 ),
+			expires: new Date(Date.now() + 5000),
 			active: 300000
 		};
 		//Adding the first user enabled the interval in charge of deleting old users
-		this.users.push( newUser );
-		if ( this.users.length === 1 ) {
+		this.users.push(newUser);
+		if (this.users.length === 1) {
 			enableUserExpirationInterval();
 		}
 		return newUser.id;
@@ -34,12 +40,12 @@ const userHandler = {
 	 * @param {number} id - Unique id used when the user was created.
 	 * @return {boolean} Does the user exist?
 	 */
-	userExists: function( id ) {
+	userExists: function (id) {
 		//find returns the found object or undefined
-		const foundUser = this.users.find( ( user ) => user.id === id );
+		const foundUser = this.users.find((user) => user.id === id);
 		const userCheck = typeof foundUser !== 'undefined';
-		if ( userCheck ) {
-			this.refreshUserSession( foundUser );
+		if (userCheck) {
+			this.refreshUserSession(foundUser);
 		}
 		return userCheck;
 	},
@@ -49,20 +55,20 @@ const userHandler = {
 	 * @param {number} id - Unique id used when the user was created.
 	 * @return {Object|undefined} User object, or undefined if the user doesn't exist.
 	 */
-	getUser: function( id ) {
-		return this.users.find( ( user ) => user.id === id );
+	getUser: function (id) {
+		return this.users.find((user) => user.id === id);
 	},
 	/**
 	 * Refresh an user's expiration time. This function must be called everytime an user performs an action.
 	 * @function refreshUserSession
 	 * @param {Object|number} user - The user object or its numeric id.
 	 */
-	refreshUserSession: function( user ) {
-		if ( typeof user === 'number' ) {
-			user = this.getUser( user );
+	refreshUserSession: function (user) {
+		if (typeof user === 'number') {
+			user = this.getUser(user);
 		}
-		if ( typeof user !== 'undefined' ) {
-			user.expires = new Date( Date.now() + user.active );
+		if (typeof user !== 'undefined') {
+			user.expires = new Date(Date.now() + user.active);
 		}
 	},
 	/**
@@ -76,8 +82,8 @@ const userHandler = {
 	 * @param {Object} preferences - Detectors setup information.
 	 * @return {number} Number of filtered (removed) detectors.
 	 */
-	setupUserDetector: function( userId, preferences ) {
-		const detectorsAffected = this.getUser( userId ).detectorHandler.setupDetectors( preferences );
+	setupUserDetector: function (userId, preferences) {
+		const detectorsAffected = this.getUser(userId).detectorHandler.setupDetectors(preferences);
 		return detectorsAffected ? detectorsAffected : 0;
 	},
 	/**
@@ -85,23 +91,23 @@ const userHandler = {
 	 * @function getDetectorLength
 	 * @return {number} Total number of detectors.
 	 */
-	getDetectorLength: function() {
+	getDetectorLength: function () {
 		return this.detectorHandler.lengthDetectors();
 	},
 	/**
 	 * Expiration function called at a specified interval which filters out expired users.
 	 * @function expirationTime
 	 */
-	expirationTime: function() {
+	expirationTime: function () {
 		const len = this.users.length;
-		this.users = this.users.filter( ( user ) => Date.now() <= user.expires );
-		if ( len !== this.users.length ) {
-			console.log( len - this.users.length + ' users deleted' );
+		this.users = this.users.filter((user) => Date.now() <= user.expires);
+		if (len !== this.users.length) {
+			console.log(len - this.users.length + ' users deleted');
 		}
 	},
-	setDetectorHandler: function( userID, detectorHandler ) {
-		const user = this.getUser( userID );
-		if ( typeof user !== 'undefined' ) {
+	setDetectorHandler: function (userID, detectorHandler) {
+		const user = this.getUser(userID);
+		if (typeof user !== 'undefined') {
 			user.detectorHandler = detectorHandler;
 		}
 	}
@@ -114,14 +120,14 @@ const userHandler = {
  */
 function enableUserExpirationInterval() {
 	//setInterval returns its id
-	const expirationIntervalId = setInterval( function() {
+	const expirationIntervalId = setInterval(function () {
 		userHandler.expirationTime();
 		//if there is no users, the interval is cancelled
-		if ( userHandler.users.length === 0 ) {
-			console.log( 'no more users, interval stopped' );
-			clearInterval( expirationIntervalId );
+		if (userHandler.users.length === 0) {
+			console.log('no more users, interval stopped');
+			clearInterval(expirationIntervalId);
 		}
-	}, 60000 );
+	}, 60000);
 }
 
 

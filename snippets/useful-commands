@@ -1,0 +1,2 @@
+#Generation of JSDoc (from root of tot-system)
+jsdoc ./routes/v1/ -r -d ./docs/v1
