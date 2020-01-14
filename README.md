@@ -114,15 +114,32 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 * `/results-raw/:channel`. 
   *  `GET`. As in `/results-raw`, but just for one channel.
 -->
-# Documentation
 
-You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
+# Project structure
+
+Here you can find how the project directory is organised. You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
 
 ## `src/users.js`
 
-### [userHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#.userHandler)
+### [userHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~userHandler)
 
+#### [addUser](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~addUser)
 
+#### [userExists](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~userExists)
+
+#### [getUser](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~getUser)
+
+#### [refreshUserSession](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~refreshUserSession)
+
+#### [setupUserDetector](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~setupUserDetector)
+
+#### [getDetectorLength](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~getDetectorLength)
+
+#### [expirationTime](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~expirationTime)
+
+#### [setDetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~setDetectorHandler)
+
+#### [enableUserExpirationInterval](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~enableUserExpirationInterval)
 
 ## `src/core.js`
 
@@ -131,6 +148,8 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 ### [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html)
 
 #### [DetectorHandler.prototype.addDetector](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.addDetector)
+
+#### [DetectorHandler.prototype.setupDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.setupDetectors)
 
 #### [DetectorHandler.prototype.analyseMedia](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.analyseMedia)
 
@@ -142,7 +161,23 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 
 #### [DetectorHandler.prototype.getDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getDetectors)
 
-#### [DetectorHandler.prototype.mergeResults]()
+#### [DetectorHandler.prototype.lengthDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.lengthDetectors)
+
+#### [DetectorHandler.prototype.getChannelsKeys](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelsKeys)
+
+#### [DetectorHandler.prototype.getChannels](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannels)
+
+#### [DetectorHandler.prototype.getChannelDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelDetectors)
+
+#### [DetectorHandler.prototype.mergeResults](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.mergeResults)
+
+## `src/tools/merge.js`
+
+### [strategies](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~strategies)
+
+### [getMergingDataStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~getMergingDataStrategy)
+
+### [applyStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~applyStrategy)
 
 ## `src/detectors/detector.js`
 
@@ -160,11 +195,16 @@ You can read the code documentation [here](https://josemariagarcia95.github.io/t
 
 #### [Detector.prototype.getResults](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.getResults)
 
+#### [Detector.prototype.applyStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.applyStrategy)
+
+
 ## `src/detectors/channel-example`
 
 ### `src/detectors/channel-example/benchmark-files`
 
 ### `src/detectors/channel-example/example.js`
+
+In order to create support for a new detectors,
 
 #### module.exports.initialize
 

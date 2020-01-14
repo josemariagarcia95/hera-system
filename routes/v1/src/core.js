@@ -245,6 +245,7 @@ DetectorHandler.prototype.lengthDetectors = function( ) {
 
 /**
  * Return array of channels
+ * @function getChannelsKeys
  * @memberof DetectorHandler
  * @return {Array} Array of channels
  */
@@ -254,6 +255,7 @@ DetectorHandler.prototype.getChannelsKeys = function( ) {
 
 /**
  * Return array of channels
+ * @function getChannels
  * @memberof DetectorHandler
  * @param {Array} channelNames - Array of strings of channel names.
  * @return {Array.<Detector>} Array of channels (being a channel an array of Detector)

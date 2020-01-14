@@ -11,6 +11,8 @@ const mean = require( './operations' ).mean;
  * receives an array of triplets and returns a single triplet. Then, add another case to the switch in the
  * [getMergingDataStrategy]{@link module:Merge~getMergingDataStrategy} so there is a case which returns
  * this brand new strategy.
+ * @constant {Object}
+ * @name strategies
  */
 const strategies = {
 	default: function( tripletsArray ) {
@@ -47,9 +49,19 @@ const getMergingDataStrategy = function( strategyName ) {
 	return strategy;
 }
 
-module.exports.getMergingDataStrategy = getMergingDataStrategy;
-
-module.exports.applyStrategy = function( strategyName, tripletsArray ) {
+/**
+ * Applies selected strategy to incoming data
+ * @function applyStrategy
+ * @param {string} strategyName - String with the name of a strategy. This string should match one of
+ * the cases in the switch-case block of the [getMergingDataStrategy]{@link module:Merge~getMergingDataStrategy} function.
+ * @param tripletsArray - Array of triplets.
+ * @return {Function}
+ */
+const applyStrategy = function( strategyName, tripletsArray ) {
 	const strategy = getMergingDataStrategy( strategyName );
 	return strategy( tripletsArray );
 };
+
+module.exports.getMergingDataStrategy = getMergingDataStrategy;
+
+module.exports.applyStrategy = applyStrategy;
