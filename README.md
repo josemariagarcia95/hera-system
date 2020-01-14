@@ -11,7 +11,7 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**. The snippets below show different examples of how to communicate with Tot using different programming languages. While these snippets are written in JavaScript, Python, Java and Ruby, you can use whatever programming language you want, as long as it supports communications via HTTP requests.
+to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**. The snippets below show different examples of how to communicate with Tot using different programming languages. While these snippets are written in *JavaScript*, *Python*, *Java* and *Ruby*, you can use whatever programming language you want, as long as it supports communications via HTTP requests.
 
 ```javascript
 // Javascript (client)
@@ -78,7 +78,7 @@ Once the server is running, the workflow would be as follows:
 
 See the next section to read more details about each endpoint.
 
-## About the API
+## Communicating with the API's endpoints
 The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `v2`, `v3`, etc.) contains an `api.js` file and a `src` folder. The `api.js` file contains the middleware to handle each endpoint of the API. This middleware is imported in the API entry point, (`app.js` file).
 
 * `/`
@@ -92,16 +92,19 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 	* `POST`. Endpoint used to analyse media files. The request contains the path to the file which holds the affective information, the type of information that the file contains and the kind of information that the API must look for. 
 		* `mediaType {Array}`: Kind of media which will be sent. Options can be "image", "video", "sound" and "text". However, any other type can be added to the API, since the media types that the API supports are specified on the `/init` endpoint, in the `media` attribute of each detector. 
 		* `lookingFor {String}`: Feature we want to analyse. Options can be "face", "voice", "signal" and "body". Again, the capabilities of the API regarding this parameter are specified on the `/init` endpoint, in the `category` of each detector.
-		* `mediaPath {String}`: Path pointing to the file that must be analysed. This path can be either local or remote. _Each detector must handle this path according to its characteristics_. For instance, if you have a detector which can only analyse online resources, and you want it to analyse some local file (some image took with the webcam, a sound file recorded with the microphone), you'll have to upload somewhere inside the `extractEmotions` callback of said detector.
+		* `mediaPath {String}`: Path pointing to the file that must be analysed. This path can be either local or remote. _Each detector must handle this path according to its characteristics_. For instance, if you have a detector which can only analyse online resources, and you want it to analyse some local file (some image took with the webcam, a sound file recorded with the microphone), you'll have to upload somewhere inside the `extractEmotions` callback of said detector. For instance, in `src/tools/upload-ftp.js` you can find code to upload a file to a web server via FTP.
 
-**IMPORTANT. THIS ENDPOINT DOESN'T RETURN THE AFFECTIVE OUTPUT RESULTING FROM ANALYSING SOME FILE. IN ORDER TO RETRIEVE THAT DATA, THE `/results` MUST BE USED.**
+**IMPORTANT. THIS ENDPOINT DOESN'T RETURN THE AFFECTIVE OUTPUT RESULTING FROM ANALYSING SOME FILE. IN ORDER TO RETRIEVE THAT DATA, THE `/results` ENDPOINT MUST BE USED.**
 
 * `/results`
-  * `GET`. This endpoint retrieves a single PAD result, as a all th results in PAD form. This include each individual result and the fusion of all the results.
+  * `POST`. This endpoint retrieves a single PAD result, being this the product of aggregating all the results from every detector and channel.
+    * `channelsToMerge {Array|String}`. Array of channels that should be merged. E.g., `["face", "voice"]`. This parameters can also be a single string naming a channel ("face", "voice", "eda") or just "all".
+    * `localStrategy {String}`. Strategy used to aggregate results locally. This strategy is used to by each detector of every channel present in `channelsToMerge` to aggregate its own results and then by every channel to aggregate those locally aggregated data.
+    * `globalStrategy {String}`. Strategy used to aggregate the locally aggregated data. If any of these strategies doesn't exist, a default strategy (mean) is used.
 * `/setup`
-	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). `/setup` receives, in the request body, up to 3 parameters.
-		* `type`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category.
-		* `realTime`: boolean attribute representing the `realTime` attribute. Only detectors with a matching value of it will be kept.
+	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). This endpoint allows you to filter detectors that doesn't satisfy certain requirements, like working in real time, having a delay which is bigger than a fixed threshold, etc. `/setup` receives, in the request body, up to 3 parameters.
+		* `type {Array}`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category. E.g., `["face", "voice"]`.
+		* `realTime {Boolean}`: boolean attribute representing the `realTime` attribute. Only detectors with a matching value of it will be kept.
 		* `delay`: response time threshold. Detectors whose delay attribute is bigger than the one in the `/setup` request will be deleted. 
 <!---
 * `/results/:channel`
@@ -116,6 +119,8 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
 
 ## `src/users.js`
+
+### [userHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#.userHandler)
 
 
 

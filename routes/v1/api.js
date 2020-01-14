@@ -9,9 +9,9 @@ const users = require( './src/users.js' );
 const uniqid = require( 'uniqid' );
 const request = require( 'request' );
 const express = require( 'express' );
-const router = express.Router();
+const router = express.Router( );
 
-const detectorHandler = new core.DetectorHandler();
+const detectorHandler = new core.DetectorHandler( );
 
 /**
  * <strong>ENDPOINT.</strong><br/>
@@ -35,7 +35,7 @@ router.get( '/', function( req, res, next ) {
 	if ( req.cookies && users.userExists( req.cookies.userId ) ) {
 		console.log( 'Existing user. Session refreshed' );
 	} else {
-		const userId = users.addUser( uniqid() );
+		const userId = users.addUser( uniqid( ) );
 		console.log( 'User added' );
 		res.cookie( 'userId', userId );
 	}
@@ -59,7 +59,7 @@ router.use( function( req, res, next ) {
 			status: 'User doesn\'t exist. Expired session. Please, send request to / first.'
 		} );
 	} else {
-		next();
+		next( );
 	}
 } );
 
@@ -71,7 +71,7 @@ router.use( function( req, res, next ) {
 	if ( req.headers[ 'content-type' ].includes( 'x-www-form-urlencoded' ) ) {
 		req.body = qs.parse( req.body );
 	}
-	next();
+	next( );
 } );
 
 /**
@@ -85,7 +85,7 @@ router.use( function( req, res, next ) {
  */
 router.post( '/init', function( req, res, next ) {
 	console.log( '****************************INIT****************************' );
-	const promises = [];
+	const promises = [ ];
 	let detectorsData = {};
 	//qs.parse(req.body when request is url-encoded)
 	if ( req.body.settings ) {
@@ -98,7 +98,7 @@ router.post( '/init', function( req, res, next ) {
 	}
 	//If there is data in detectorsData, we create the detectors
 	if ( Object.keys( detectorsData ).length ) {
-		const detectorHandler = new core.DetectorHandler();
+		const detectorHandler = new core.DetectorHandler( );
 		for ( const detectorId in detectorsData ) {
 			const callbacks = require( detectorsData[ detectorId ].callbacks );
 			const newDetector = core.createDetector(
@@ -112,7 +112,7 @@ router.post( '/init', function( req, res, next ) {
 				callbacks.extractEmotions,
 				callbacks.translateToPAD
 			);
-			promises.push( newDetector.initialize() );
+			promises.push( newDetector.initialize( ) );
 			detectorHandler.addDetector( newDetector );
 		}
 		Promise.all( promises ).then( function( results ) {
@@ -162,7 +162,7 @@ router.post( '/setup', function( req, res, next ) {
 			res.status( 200 ).send( {
 				status: 'OK',
 				detectorsAffected: detectorsAffected,
-				detectorsUsed: user.detectorHandler.lengthDetectors()
+				detectorsUsed: user.detectorHandler.lengthDetectors( )
 			} );
 		} catch ( errorData ) {
 			console.error( errorData );
@@ -225,7 +225,7 @@ router.post( '/analyse', function( req, res, next ) {
 			};
 			request( options, analyseMedia );
 		} else {
-			analyseMedia();
+			analyseMedia( );
 		}
 	}
 	//res.status( 400 ).send( 'Something went horribly wrong' );
@@ -246,7 +246,10 @@ router.post( '/analyse', function( req, res, next ) {
  * 	producing the final PAD triplet which is returned to the user.</li>
  * </ol>
  * @function /results
- * @param {Array} [channelsToMerge] - Array of emotion channels to merge.
+ * @param {String|Array} [channelsToMerge] - Array of emotion channels to merge.
+ * @param {string} localStrategy - Name of the strategy to use to aggregate the results of each individual
+ *  detector and each channel.
+ * @param {string} globalStrategy - Name of the strategy to use to aggregate the locally aggregated results.
  */
 router.post( '/results', function( req, res, next ) {
 	console.log( '****************************RESULTS****************************' );
@@ -276,7 +279,7 @@ router.post( '/results', function( req, res, next ) {
 router.get( '/results/:channel/:type', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL****************************' );
 	const preferences = req.body;
-	const detectors = [];
+	const detectors = [ ];
 	const detectorsInfo = fs.readFileSync( '../../credentials.json' );
 	if ( preferences ) {
 
@@ -289,7 +292,7 @@ router.get( '/results/:channel/:type', function( req, res, next ) {
 router.get( '/results/:channel/:detector', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
 	if ( req.params.channel === void( 0 ) ) {
-		const detector = detectorHandler.getDetectorFromChannel();
+		const detector = detectorHandler.getDetectorFromChannel( );
 	}
 	res.status( 200 ).send( 'Todo ok' );
 } );

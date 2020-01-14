@@ -43,7 +43,7 @@
 		"preserve_newlines": true,
 		"space_after_anon_function": false,
 		"space_before_conditional": true,
-		"space_in_empty_paren": false,
+		"space_in_empty_paren": "always",
 		"space_in_paren": true,
 		"unescape_strings": false,
 		"wrap_line_length": 0

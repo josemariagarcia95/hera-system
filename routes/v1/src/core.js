@@ -51,7 +51,7 @@ function createDetector(
  * @constructs DetectorHandler
  * Under each key in its <tt>detectors</tt> attribute there is an array of <tt>Detector</tt> objects
  */
-function DetectorHandler() {
+function DetectorHandler( ) {
 	this.detectors = {};
 }
 
@@ -74,15 +74,15 @@ DetectorHandler.prototype.addDetector = function( detectorObj ) {
 			'\\benchmark-files' ) ) {
 		fs.readdirSync( __dirname + '\\detectors\\' + detectorObj.category +
 			'\\benchmark-files' ).forEach( function( fileName, index, array ) {
-			let startTime = present();
-			const times = [];
+			let startTime = present( );
+			const times = [ ];
 			const callback = function( data ) {
-				times.push( present() - startTime );
-				startTime = present();
+				times.push( present( ) - startTime );
+				startTime = present( );
 				if ( index + 1 === array.length ) {
 					detectorObj.delay = mean( times );
 					detectorObj.realTime = detectorObj.delay < realTimeThreshold;
-					detectorObj.cleanResults();
+					detectorObj.cleanResults( );
 				}
 			};
 			console.log( __dirname + '\\detectors\\' + detectorObj.category +
@@ -108,6 +108,7 @@ DetectorHandler.prototype.setupDetectors = function( preferences ) {
 			//that doesn't satisfy the requirements from the request's body
 			switch ( propFilter ) {
 				case 'type':
+					//Filter out detectors whose category is not in the setup request
 					detectorsAffected += this.filter(
 						( det ) => preferences[ propFilter ].indexOf( det.category ) !== -1
 					);
@@ -212,7 +213,7 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
 		return [
 			this.detectors[ channel ].map( function( detector ) {
 				const results = detector.getResults( resulsType );
-				return results ? results : [];
+				return results ? results : [ ];
 			} )
 		];
 	} else {
@@ -228,8 +229,8 @@ DetectorHandler.prototype.getChannelResults = function( channel, resulsType ) {
  * @memberof DetectorHandler
  * @return {Array} Array with all the detectors in DetectorHandler.
  */
-DetectorHandler.prototype.getDetectors = function() {
-	return [].concat( ...Object.values( this.detectors ) );
+DetectorHandler.prototype.getDetectors = function( ) {
+	return [ ].concat( ...Object.values( this.detectors ) );
 };
 
 /**
@@ -238,8 +239,8 @@ DetectorHandler.prototype.getDetectors = function() {
  * @memberof DetectorHandler
  * @return {number} Total number of detectors.
  */
-DetectorHandler.prototype.lengthDetectors = function() {
-	return this.getDetectors().length;
+DetectorHandler.prototype.lengthDetectors = function( ) {
+	return this.getDetectors( ).length;
 };
 
 /**
@@ -247,7 +248,7 @@ DetectorHandler.prototype.lengthDetectors = function() {
  * @memberof DetectorHandler
  * @return {Array} Array of channels
  */
-DetectorHandler.prototype.getChannelsKeys = function() {
+DetectorHandler.prototype.getChannelsKeys = function( ) {
 	return Object.keys( this.detectors );
 };
 
@@ -259,13 +260,13 @@ DetectorHandler.prototype.getChannelsKeys = function() {
  */
 DetectorHandler.prototype.getChannels = function( channelNames ) {
 	if ( channelNames.length === 0 ) {
-		return [];
+		return [ ];
 	} else {
 		const channelArray = channelNames.map( ( channelName ) => {
 			if ( this.detectors.hasOwnProperty( channelName ) ) {
 				return this.getChannelResults( channelName, 'pad' );
 			} else {
-				return [];
+				return [ ];
 			}
 		} );
 		return channelArray;
@@ -282,7 +283,7 @@ DetectorHandler.prototype.getChannelDetectors = function( channelName ) {
 	if ( this.detectors.hasOwnProperty( channelName ) ) {
 		return this.detectors[ channelName ];
 	} else {
-		return [];
+		return [ ];
 	}
 };
 
@@ -300,7 +301,7 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 	//de un canal
 	if ( channel === 'all' ) {
 		//Return all available channels
-		channelsToMerge = this.getChannelsKeys();
+		channelsToMerge = this.getChannelsKeys( );
 	} else if ( typeof channel !== 'Array' ) {
 		//channel can be either undefined or a string
 		channelsToMerge = [ channel ];
@@ -314,7 +315,7 @@ DetectorHandler.prototype.mergeResults = function( channel, localStrategy, globa
 		//Each detector applies the strategy to his own result
 		//We get an array of triplets per detector
 		//The strategies can be undefined at this point, and this will be handled in the
-		//./tool/operation.js file.
+		//./tool/merge.js file.
 		const aggregatedDetectorResults = detectors.map( ( det ) => det.applyStrategy( localStrategy ) );
 		return applyStrategy( localStrategy, aggregatedDetectorResults );
 	} );
