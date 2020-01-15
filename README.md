@@ -204,11 +204,13 @@ Here you can find how the project directory is organised. You can read the code 
 
 ### `src/detectors/channel-example/example.js`
 
-In order to create support for a new detectors,
+In order to add support for new detectors, you just need to create a JavaScript file exporting the three following methods. Since Tot has been developed under an interface-based paradigm, these three methods are the only part you need to code to extend the API's functionality. Remember to export them using **`module.exports`** so the detector's methods can be accessed from outside the file.
 
 #### module.exports.initialize
+This method takes care of any **initialization tasks** that your detector needs. For instance, if this detector is a proxy for a third-party service offered via Internet, you may need to get an auth token first. If this detector is a proxy for a bluetooth wristband, you may need to put your discovery and connection code in this method. If you don't need any initialization, just return a resolved promise (`Promise.resolve`). **Important**: this function must be **`async`** and always return a **`Promise.resolve`**, since the initializacion procress of every detector is async.
 
 #### module.exports.extractEmotions
+This is the main method of every detector, the one in charge of performing the actual emotion detection, being it forwarding some media resource to some API over the internet, reading RAW data from a sensor, etc. This method receives three parameters, namely **`context`**, **`media`** and **`callback`**. **`context`** is the environment from which the method is called, usually a [Detector](routes/v1/src/detectors/detector.js) object; **`media`** is a path to the file which holds the affective information, if there is any. If there is no file (maybe the detector reads some RAW data from a certain port or socket in this method), this parameter will stay unused for the sake of the aforemention interface-based programming paradigm. Final parameter, **`callback`**, is an optional callback to handle the retrieved data, if there is any manipulation that has to be done.
 
 #### module.exports.translateToPAD
 

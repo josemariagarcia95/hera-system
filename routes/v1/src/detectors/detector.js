@@ -26,8 +26,8 @@ function Detector( id, category, media, realTime, url, otherOptions ) {
 	this.delay = 500;
 	this.url = url;
 	this.otherOptions = otherOptions;
-	this.rawResults = [];
-	this.padResults = [];
+	this.rawResults = [ ];
+	this.padResults = [ ];
 }
 
 /**
@@ -37,7 +37,7 @@ function Detector( id, category, media, realTime, url, otherOptions ) {
  * @function initialize
  * @memberof Detector
  */
-Detector.prototype.initialize = async function() {
+Detector.prototype.initialize = async function( ) {
 	console.log( 'Initialize method in Detector class' );
 };
 
@@ -50,7 +50,7 @@ Detector.prototype.initialize = async function() {
  * This string will be an absolute path/url pointing to where the media is stored.
  * @param {Function} callback - Callback used to auxiliar tasks, like measuring times.
  */
-Detector.prototype.extractEmotions = function( context, media, callback = () => {} ) {
+Detector.prototype.extractEmotions = function( context, media, callback = ( ) => {} ) {
 	console.log( 'extractEmotions method in Detector class' );
 };
 
@@ -70,7 +70,7 @@ Detector.prototype.translateToPAD = function( results ) {
  * Add the raw results and the PAD-translated version to the results arrays.
  * @function addResults
  * @memberof Detector
- * @param {Object} results - Results as they come from the 3rd party emotion detection service.
+ * @param {Object} results - Results as they come from the third party emotion detection service, hardware API, etc.
  */
 Detector.prototype.addResults = function( results ) {
 	this.rawResults.push( results );
@@ -82,9 +82,9 @@ Detector.prototype.addResults = function( results ) {
  * @function cleanResults
  * @memberof Detector
  */
-Detector.prototype.cleanResults = function() {
-	this.rawResults = [];
-	this.padResults = [];
+Detector.prototype.cleanResults = function( ) {
+	this.rawResults = [ ];
+	this.padResults = [ ];
 };
 
 /**
