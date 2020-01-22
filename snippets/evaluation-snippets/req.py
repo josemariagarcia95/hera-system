@@ -1,14 +1,12 @@
 import requests as request
 import json
 
-"""
 form_data = {
-    "api_key": "lWMTqYOBCFvPIqRrcBpdBX6FTyMNdi7Y",
-    "api_secret": "fE6OCbIshDawTnXZZzm78_eWfAdG9jQz",
+    "api_key": ".........",
+    "api_secret": ".......",
     "return_attributes": "emotion",
-    "image_url": "https://josemariagarcia.es/img/perfil-viejo-1.jpg",
+    "image_url": "......",
 }
 
-r = request.post("https://api-us.faceplusplus.com/facepp/v3/detect", data=form_data)
-print(json.loads(r.text)["faces"][0]["attributes"]["emotion"])
-"""
+r = request.post("url", data=form_data)
+print(r.text)
