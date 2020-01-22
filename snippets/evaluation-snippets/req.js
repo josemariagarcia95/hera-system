@@ -1,10 +1,7 @@
 const request = require('request');
 // FACE++
 const formData = {
-    api_key: '......',
-    api_secret: '......',
-    return_attributes: 'emotion',
-    image_url: '..........'
+    //POST request data
 };
 
 const options = {
@@ -19,7 +16,6 @@ request(options, function (error, response, body) {
 // DUMMY DETECTOR
 const options1 = {
     //url, type of HTTP requests
-    image_url: 'https://josemariagarcia.es/img/perfil-viejo-1.jpg',
     headers: {
         'user-agent': 'node.js'
     }
