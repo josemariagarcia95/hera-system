@@ -1,5 +1,6 @@
 import requests as request
 import json
+from time import sleep
 
 form_data = {
     #Set POST request parameters
