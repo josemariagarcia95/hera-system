@@ -2,7 +2,7 @@ const request = require( 'request' ).defaults( {
 	jar: true
 } );
 
-const ip = "http://172.19.194.129:3000/api/v1"
+const ip = "http://.../api/v1"
 const options = {
 	method: 'GET',
 	url: ip + '/'
@@ -29,16 +29,8 @@ function init( ) {
 						},
 						"callbacks": "./src/detectors/other/mockup.js"
 					},
-					"facepp": {
-						"category": "face",
-						"media": [ "image" ],
-						"realTime": false,
-						"url": "https://api-us.faceplusplus.com/facepp/v3/detect",
-						"otherOptions": {
-							"api_key": "lWMTqYOBCFvPIqRrcBpdBX6FTyMNdi7Y",
-							"api_secret": "fE6OCbIshDawTnXZZzm78_eWfAdG9jQz"
-						},
-						"callbacks": "./src/detectors/face/facepp.js"
+					"another-name": {
+						...
 					}
 				}
 			},
@@ -59,7 +51,7 @@ function analyse( ) {
 			body: {
 				mediaType: 'image',
 				lookingFor: 'face',
-				mediaPath: 'http://josemariagarcia.es/img/perfil.jpg'
+				mediaPath: '...jpg'
 			},
 			json: true
 		},
