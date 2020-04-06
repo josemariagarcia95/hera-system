@@ -21,5 +21,7 @@ function normalize( triplet, max, min ) {
 	return triplet.map( ( value ) => ( value - min ) / ( max - min ) );
 }
 
+// const compose = (...functions) => args => functions.reduceRight((arg, fn) => fn(arg), args);
+
 module.exports.mean = mean;
 module.exports.normalize = normalize;

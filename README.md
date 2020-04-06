@@ -84,28 +84,34 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 * `/`
     * `GET`. Generates an user object with an unique id using [uniqid](https://www.npmjs.com/package/uniqid) and returns this id to the user in a cookie. **CALLING THIS ENDPOINT IS MANDATORY TO BE ABLE TO USE THE API**.
         * This endpoint has no parameters.
+    * *Return*: User id stored in the cookie `userId`. 
 * `/init`
-	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified. If none of these parameters are present in the request, no detector proxy will be created. If they are both specified, only `settings` will be used.
+	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified. If none of these parameters are present in the request, no detector proxy will be created. If they are both specified, only `settings` will be used. **REMEMBER: SEND JUST ONE OF THESE PARAMETERS**.
     	* `settings {JSON}`. JSON object following the [aforementioned format](#settings.json-sample-file).
     	* `settingsPath {string}`. Path to file containing the setting information. Keep in mind that the route to the file starts at the root of the project(`tot-system/...`).
+  	* *Return*: Number of detectors initialized. 
+
 * `/analyse`
 	* `POST`. Endpoint used to analyse media files. The request contains the path to the file which holds the affective information, the type of information that the file contains and the kind of information that the API must look for. 
 		* `mediaType {Array}`: Kind of media which will be sent. Options can be "image", "video", "sound" and "text". However, any other type can be added to the API, since the media types that the API supports are specified on the `/init` endpoint, in the `media` attribute of each detector. 
 		* `lookingFor {String}`: Feature we want to analyse. Options can be "face", "voice", "signal" and "body". Again, the capabilities of the API regarding this parameter are specified on the `/init` endpoint, in the `category` of each detector.
 		* `mediaPath {String}`: Path pointing to the file that must be analysed. This path can be either local or remote. _Each detector must handle this path according to its characteristics_. For instance, if you have a detector which can only analyse online resources, and you want it to analyse some local file (some image took with the webcam, a sound file recorded with the microphone), you'll have to upload somewhere inside the `extractEmotions` callback of said detector. For instance, in `src/tools/upload-ftp.js` you can find code to upload a file to a web server via FTP.
+  * *Return*: HTTP status code and a message about the analysis process.
 
 **IMPORTANT. THIS ENDPOINT DOESN'T RETURN THE AFFECTIVE OUTPUT RESULTING FROM ANALYSING SOME FILE. IN ORDER TO RETRIEVE THAT DATA, THE `/results` ENDPOINT MUST BE USED.**
 
 * `/results`
-  * `POST`. This endpoint retrieves a single PAD result, being this the product of aggregating all the results from every detector and channel.
+  * `POST`. This endpoint retrieves a single [PAD](https://en.wikipedia.org/wiki/PAD_emotional_state_model) result, being this the product of aggregating all the results from every detector and channel.
     * `channelsToMerge {Array|String}`. Array of channels that should be merged. E.g., `["face", "voice"]`. This parameters can also be a single string naming a channel ("face", "voice", "eda") or just "all".
     * `localStrategy {String}`. Strategy used to aggregate results locally. This strategy is used to by each detector of every channel present in `channelsToMerge` to aggregate its own results and then by every channel to aggregate those locally aggregated data.
     * `globalStrategy {String}`. Strategy used to aggregate the locally aggregated data. If any of these strategies doesn't exist, a default strategy (mean) is used.
+  * *Return*: One triplet representing the dimensions Pleasure, Arousal and Dominance of all the aggregated data.  
 * `/setup`
 	* `POST`. This endpoint gives you another opportunity to customize the services to use. For instance, during the initialization in `/init` a benchmarking process is carried out. This process sets the value of the attributes `realTime` (boolean attribute which indicates if the service answers in real time) and `delay` (how many miliseconds does the service take to answer). This endpoint allows you to filter detectors that doesn't satisfy certain requirements, like working in real time, having a delay which is bigger than a fixed threshold, etc. `/setup` receives, in the request body, up to 3 parameters.
 		* `type {Array}`:  Array of the detector categories you want to keep. Detector categories which are not in this array will be deteled. An empty array deteles every category. E.g., `["face", "voice"]`.
 		* `realTime {Boolean}`: boolean attribute representing the `realTime` attribute. Only detectors with a matching value of it will be kept.
 		* `delay`: response time threshold. Detectors whose delay attribute is bigger than the one in the `/setup` request will be deleted. 
+  * *Return*: Number of detectors affected by this setup configuration. 
 <!---
 * `/results/:channel`
   * `GET`. This endpoint retrieves all the results in PAD form of a single channel. This include each individual result and the fusion of all the results in that channel. Channels are defined by the different category values in the `credentials.json` file.
@@ -213,6 +219,23 @@ This method takes care of any **initialization tasks** that your detector needs.
 This is the main method of every detector, the one in charge of performing the actual emotion detection, being it forwarding some media resource to some API over the internet, reading RAW data from a sensor, etc. This method receives three parameters, namely **`context`**, **`media`** and **`callback`**. **`context`** is the environment from which the method is called, usually a [Detector](routes/v1/src/detectors/detector.js) object; **`media`** is a path to the file which holds the affective information, if there is any. If there is no file (maybe the detector reads some RAW data from a certain port or socket in this method), this parameter will stay unused for the sake of the aforemention interface-based programming paradigm. Final parameter, **`callback`**, is an optional callback to handle the retrieved data, if there is any manipulation that has to be done.
 
 #### module.exports.translateToPAD
+In order to aggregate all the affective data, Tot needs to translate the data coming from each different service to the same format, that is, the [PAD](https://en.wikipedia.org/wiki/PAD_emotional_state_model) format. This way, each affective result coming from any detector is translated to a triplet of three numbers, being each one a value between -1 and 1 which stands for how negative or positive the expressed emotion is, how relaxed or excited the person is and how much passive or dominant does that person feel while feeling that emotion, respectively.
+
+```javascript
+// E.g.
+// Results coming from an API which analyses emotions present in a facial expression
+const result = { happiness: 85.0, neutral: 1.2, surprise: 8.2, anger: 5.0 }
+const padResult = translateToPAD(result);
+// padResults = [0.75, -0.5,  -0.2]
+// The image sent to the API presents a positive emotion, the subject seems rather calmed and shows a hint of modesty, which is translated into passivity.
+
+// Results coming from a smart wristband which reads the acceleration of the movement of the hand, the heart rate of the person wearing it and their galvanic skin resistance (GSR.
+const result1 = { acceleration: 10.54, heartrate: 96, gsr: 10 }
+const padResult1 = translateToPAD(result);
+// padResults1 = [0, 0.69, 0.5]
+// The data gives no information about the positivity/negativity of the emotion, the subject is pretty active, based on their heart rate and galvanic skin resistance, so the emotion they're feeling is closer to excitement, and they are feeling pretty dominant, based in their movement (acceleration) and GSR.
+```
+It's completely in the developer's hands to decide how to do this transformation and how to consider the different parts of a result and how they affect the different dimensions of the PAD space.
 
 # Appendix
 

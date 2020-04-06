@@ -3,12 +3,12 @@ const request = require( 'request' );
 const fs = require( 'fs' );
 const normalize = require( '../../tools/operations' ).normalize;
 
-module.exports.initialize = async function() {
+module.exports.initialize = async function( ) {
 	console.log( this.id + ' Initialize template' );
 	return Promise.resolve( this.id + ' initialize method' );
 };
 
-module.exports.extractEmotions = function( context, media, callback = () => {} ) {
+module.exports.extractEmotions = function( context, media, callback = ( ) => {} ) {
 	const formData = {
 		api_key: this.otherOptions.api_key,
 		api_secret: this.otherOptions.api_secret,
@@ -42,10 +42,10 @@ module.exports.extractEmotions = function( context, media, callback = () => {} )
 module.exports.translateToPAD = function( results ) {
 	console.log( 'Método en ' + this.id + 'js' );
 	return normalize( [
-		results[ 'happiness' ] + 0.4 * results[ 'disgust' ] + 0.2 * results[ 'sadness' ] +
-		0.1 * results[ 'anger' ] + 0.3 * results[ 'fear' ],
-		0.7 * results[ 'sadness' ] + 0.3 * results[ 'disgust' ] + 0.3 * results[ 'surprise' ] +
-		0.3 * results[ 'anger' ] + 0.2 * results[ 'fear' ] + 0.2 * results[ 'happiness' ],
-		0.7 * results[ 'fear' ] + 0.3 * results[ 'disgust' ] + 0.7 * results[ 'anger' ] + 0.3 * results[ 'happiness' ]
+		results[ 'happiness' ] - 0.4 * results[ 'disgust' ] - 0.2 * results[ 'sadness' ] -
+		0.1 * results[ 'anger' ] - 0.3 * results[ 'fear' ],
+		-0.7 * results[ 'sadness' ] + 0.3 * results[ 'disgust' ] + 0.3 * results[ 'surprise' ] +
+		0.3 * results[ 'anger' ] + 0.2 * results[ 'fear' ] - 0.2 * results[ 'happiness' ],
+		-0.7 * results[ 'fear' ] + 0.3 * results[ 'disgust' ] + 0.7 * results[ 'anger' ] + 0.3 * results[ 'happiness' ]
 	], 100, 0 );
 };

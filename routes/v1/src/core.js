@@ -266,7 +266,8 @@ DetectorHandler.prototype.getChannels = function( channelNames ) {
 	} else {
 		const channelArray = channelNames.map( ( channelName ) => {
 			if ( this.detectors.hasOwnProperty( channelName ) ) {
-				return this.getChannelResults( channelName, 'pad' );
+				return this.detectors[ channelName ];
+				//return this.getChannelResults( channelName, 'pad' );
 			} else {
 				return [ ];
 			}
