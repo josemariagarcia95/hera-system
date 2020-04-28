@@ -11,8 +11,6 @@ const request = require( 'request' );
 const express = require( 'express' );
 const router = express.Router( );
 
-const detectorHandler = new core.DetectorHandler( );
-
 /**
  * <strong>ENDPOINT.</strong><br/>
  * The root (<tt>/</tt>) endpoint allows us to create a <strong>user session</strong>.<br/>
@@ -292,7 +290,7 @@ router.get( '/results/:channel/:type', function( req, res, next ) {
 router.get( '/results/:channel/:detector', function( req, res, next ) {
 	console.log( '****************************RESULTS/CHANNEL/DETECTORS****************************' );
 	if ( req.params.channel === void( 0 ) ) {
-		const detector = detectorHandler.getDetectorFromChannel( );
+		//const detector = detectorHandler.getDetectorFromChannel( );
 	}
 	res.status( 200 ).send( 'Todo ok' );
 } );
