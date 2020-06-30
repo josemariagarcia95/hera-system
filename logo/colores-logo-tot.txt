@@ -1,0 +1,2 @@
+verde claro - RGB (152, 202, 77) / HSL (56, 130, 131)
+verde oscuro - RGB (109, 151, 45) / HSL (56, 130, 92)
