@@ -1,8 +1,8 @@
-# ![logo](/logo/tot-64.png) Tot system
-Tot is a three-level multimodal emotion detection system prepared to **manage different emotion detectors in one place, detect emotions using said recognizers and aggregate results from each emotion detection service**. ![logo16](/logo/tot-16.png) The **Tot** system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in Tot, and the requests that would be send to said service are sent to Tot. Tot will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in a device), gathering the results and aggregate them on command.
+# HERA system
+HERA (Heterogeneous Emotional Results Aggregator) is a three-level multimodal emotion detection system prepared to **manage different emotion detectors in one place, detect emotions using said recognizers and aggregate results from each emotion detection service**. ![logo16](/logo/tot-16.png) The **HERA** system acts like a **proxy** of emotion recognizers: each emotion recognition service implements an interface in HERA, and the requests that would be send to said service are sent to HERA. HERA will then communicate with the corresponding service (being it a third-party service offered over the Internet or an API to access a sensor in a device), gathering the results and aggregate them on command.
 
-## Lanching Tot
-Lanching Tot is quite simple. Once you've downloaded the repository, just run a
+## Lanching HERA
+Lanching HERA is quite simple. Once you've downloaded the repository, just run a
 
 ```
 npm install
@@ -11,7 +11,7 @@ to install the node modules required and then a
 ```
 npm start
 ```
-to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **Tot** in order to analyse data, aggregate results, etc. Since Tot works as an API Rest in a certain port, it's completely **language agnostic**. The snippets below show different examples of how to communicate with Tot using different programming languages. While these snippets are written in *JavaScript*, *Python*, *Java* and *Ruby*, you can use whatever programming language you want, as long as it supports communications via HTTP requests.
+to start the API. As an express app, it runs on **port 3000** by default, but you can change this easily at the `www` file in `/bin/`. From this point on, you just send your requests to ![logo16](/logo/tot-16.png) **HERA** in order to analyse data, aggregate results, etc. Since HERA works as an API Rest in a certain port, it's completely **language agnostic**. The snippets below show different examples of how to communicate with HERA using different programming languages. While these snippets are written in *JavaScript*, *Python*, *Java* and *Ruby*, you can use whatever programming language you want, as long as it supports communications via HTTP requests.
 
 ```javascript
 // Javascript (client)
@@ -71,7 +71,7 @@ Unless you change the directory, the root of the request will always be `/api/vX
 Once the server is running, the workflow would be as follows:
 
 * **Requesting a cookie**. Call the root of the server to get an unique id. This id allows you to communicate with the rest of endpoints. Trying to communicate with these endpoints without including this unique id in the request will return an error (`Session wasn't initialized. Send request to "/" first`). This id is linked to an **user object** which will store the detectors' proxies, the data returned by these ones, etc.
-* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html) to the user object, allowing you to request emotion recognition for media files and the aggregation of the consequent results.
+* **Setting up the server**. After getting the id, call the `/init` endpoint to create the detectors' proxies. This endpoint links a [DetectorHandler](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html) to the user object, allowing you to request emotion recognition for media files and the aggregation of the consequent results.
 * **Requesting a media analyse looking for emotions**. Having your unique id, you will be able to request an emotion recognition over a media resource. **Requests to this endpoint don't return the results to these analysis**. 
 * **Aggregating results**. Using the `/results` endpoint you can request the results to the server in several formats: aggregated, grouped by channel, results of a single detector, in PAD (translated) or RAW (as the detector produces them) format, etc.   
 * **_(Optionally)_ Filtering detectors**. After creating the detectors, you can optionally filter out detectors in the `/setup` endpoint based on several criteria, like the service latency, the kind of media it supports, etc. 
@@ -88,7 +88,7 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 * `/init`
 	* `POST`. Inits detectors for an user, using setting information either sent in the request or stored in some setting file. This endpoint initializes each emotion detector and performs a benchmarking task (see [DetectorHandler.prototype.addDetector](#detectorhandlerprototypeadddetector)) to test the state of the network and the detectors. See the [bottom](#settings.json-sample-file) of the page to see an example of how this setting information must be specified. If none of these parameters are present in the request, no detector proxy will be created. If they are both specified, only `settings` will be used. **REMEMBER: SEND JUST ONE OF THESE PARAMETERS**.
     	* `settings {JSON}`. JSON object following the [aforementioned format](#settings.json-sample-file).
-    	* `settingsPath {string}`. Path to file containing the setting information. Keep in mind that the route to the file starts at the root of the project(`tot-system/...`).
+    	* `settingsPath {string}`. Path to file containing the setting information. Keep in mind that the route to the file starts at the root of the project(`hera-system/...`).
   	* *Return*: Number of detectors initialized. 
 
 * `/analyse`
@@ -123,85 +123,85 @@ The core of the API is inside the `routes/vX` folders. Each `vX` folder (`v1`, `
 
 # Project structure
 
-Here you can find how the project directory is organised. You can read the code documentation [here](https://josemariagarcia95.github.io/tot-system/docs/v1/), or you can access each specific method documentation through these links.
+Here you can find how the project directory is organised. You can read the code documentation [here](https://josemariagarcia95.github.io/hera-system/docs/v1/), or you can access each specific method documentation through these links.
 
 ## `src/users.js`
 
-### [userHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~userHandler)
+### [userHandler](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~userHandler)
 
-#### [addUser](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~addUser)
+#### [addUser](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~addUser)
 
-#### [userExists](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~userExists)
+#### [userExists](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~userExists)
 
-#### [getUser](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~getUser)
+#### [getUser](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~getUser)
 
-#### [refreshUserSession](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~refreshUserSession)
+#### [refreshUserSession](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~refreshUserSession)
 
-#### [setupUserDetector](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~setupUserDetector)
+#### [setupUserDetector](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~setupUserDetector)
 
-#### [getDetectorLength](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~getDetectorLength)
+#### [getDetectorLength](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~getDetectorLength)
 
-#### [expirationTime](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~expirationTime)
+#### [expirationTime](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~expirationTime)
 
-#### [setDetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~setDetectorHandler)
+#### [setDetectorHandler](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~setDetectorHandler)
 
-#### [enableUserExpirationInterval](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Users.html#~enableUserExpirationInterval)
+#### [enableUserExpirationInterval](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Users.html#~enableUserExpirationInterval)
 
 ## `src/core.js`
 
-### [createDetector](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Core.html#.createDetector)
+### [createDetector](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Core.html#.createDetector)
 
-### [DetectorHandler](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html)
+### [DetectorHandler](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html)
 
-#### [DetectorHandler.prototype.addDetector](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.addDetector)
+#### [DetectorHandler.prototype.addDetector](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.addDetector)
 
-#### [DetectorHandler.prototype.setupDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.setupDetectors)
+#### [DetectorHandler.prototype.setupDetectors](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.setupDetectors)
 
-#### [DetectorHandler.prototype.analyseMedia](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.analyseMedia)
+#### [DetectorHandler.prototype.analyseMedia](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.analyseMedia)
 
-#### [DetectorHandler.prototype.quitCategory](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.quitCategory)
+#### [DetectorHandler.prototype.quitCategory](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.quitCategory)
 
-#### [DetectorHandler.prototype.filter](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.filter)
+#### [DetectorHandler.prototype.filter](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.filter)
 
-#### [DetectorHandler.prototype.getChannelResults](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelResults)
+#### [DetectorHandler.prototype.getChannelResults](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.getChannelResults)
 
-#### [DetectorHandler.prototype.getDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getDetectors)
+#### [DetectorHandler.prototype.getDetectors](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.getDetectors)
 
-#### [DetectorHandler.prototype.lengthDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.lengthDetectors)
+#### [DetectorHandler.prototype.lengthDetectors](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.lengthDetectors)
 
-#### [DetectorHandler.prototype.getChannelsKeys](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelsKeys)
+#### [DetectorHandler.prototype.getChannelsKeys](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.getChannelsKeys)
 
-#### [DetectorHandler.prototype.getChannels](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannels)
+#### [DetectorHandler.prototype.getChannels](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.getChannels)
 
-#### [DetectorHandler.prototype.getChannelDetectors](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.getChannelDetectors)
+#### [DetectorHandler.prototype.getChannelDetectors](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.getChannelDetectors)
 
-#### [DetectorHandler.prototype.mergeResults](https://josemariagarcia95.github.io/tot-system/docs/v1/DetectorHandler.html#.mergeResults)
+#### [DetectorHandler.prototype.mergeResults](https://josemariagarcia95.github.io/hera-system/docs/v1/DetectorHandler.html#.mergeResults)
 
 ## `src/tools/merge.js`
 
-### [strategies](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~strategies)
+### [strategies](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Merge.html#~strategies)
 
-### [getMergingDataStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~getMergingDataStrategy)
+### [getMergingDataStrategy](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Merge.html#~getMergingDataStrategy)
 
-### [applyStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/module-Merge.html#~applyStrategy)
+### [applyStrategy](https://josemariagarcia95.github.io/hera-system/docs/v1/module-Merge.html#~applyStrategy)
 
 ## `src/detectors/detector.js`
 
-### [Detector](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html)
+### [Detector](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html)
 
-#### [Detector.prototype.initialize](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.initialize)
+#### [Detector.prototype.initialize](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.initialize)
 
-#### [Detector.prototype.extractEmotions](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.extractEmotions)
+#### [Detector.prototype.extractEmotions](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.extractEmotions)
 
-#### [Detector.prototype.translateToPAD](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.translateToPAD)
+#### [Detector.prototype.translateToPAD](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.translateToPAD)
 
-#### [Detector.prototype.addResults](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.addResults)
+#### [Detector.prototype.addResults](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.addResults)
 
-#### [Detector.prototype.cleanResults](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.cleanResults)
+#### [Detector.prototype.cleanResults](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.cleanResults)
 
-#### [Detector.prototype.getResults](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.getResults)
+#### [Detector.prototype.getResults](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.getResults)
 
-#### [Detector.prototype.applyStrategy](https://josemariagarcia95.github.io/tot-system/docs/v1/Detector.html#.applyStrategy)
+#### [Detector.prototype.applyStrategy](https://josemariagarcia95.github.io/hera-system/docs/v1/Detector.html#.applyStrategy)
 
 
 ## `src/detectors/channel-example`
@@ -210,7 +210,7 @@ Here you can find how the project directory is organised. You can read the code 
 
 ### `src/detectors/channel-example/example.js`
 
-In order to add support for new detectors, you just need to create a JavaScript file exporting the three following methods. Since Tot has been developed under an interface-based paradigm, these three methods are the only part you need to code to extend the API's functionality. Remember to export them using **`module.exports`** so the detector's methods can be accessed from outside the file.
+In order to add support for new detectors, you just need to create a JavaScript file exporting the three following methods. Since HERA has been developed under an interface-based paradigm, these three methods are the only part you need to code to extend the API's functionality. Remember to export them using **`module.exports`** so the detector's methods can be accessed from outside the file.
 
 #### module.exports.initialize
 This method takes care of any **initialization tasks** that your detector needs. For instance, if this detector is a proxy for a third-party service offered via Internet, you may need to get an auth token first. If this detector is a proxy for a bluetooth wristband, you may need to put your discovery and connection code in this method. If you don't need any initialization, just return a resolved promise (`Promise.resolve`). **Important**: this function must be **`async`** and always return a **`Promise.resolve`**, since the initializacion procress of every detector is async.
@@ -219,7 +219,7 @@ This method takes care of any **initialization tasks** that your detector needs.
 This is the main method of every detector, the one in charge of performing the actual emotion detection, being it forwarding some media resource to some API over the internet, reading RAW data from a sensor, etc. This method receives three parameters, namely **`context`**, **`media`** and **`callback`**. **`context`** is the environment from which the method is called, usually a [Detector](routes/v1/src/detectors/detector.js) object; **`media`** is a path to the file which holds the affective information, if there is any. If there is no file (maybe the detector reads some RAW data from a certain port or socket in this method), this parameter will stay unused for the sake of the aforemention interface-based programming paradigm. Final parameter, **`callback`**, is an optional callback to handle the retrieved data, if there is any manipulation that has to be done.
 
 #### module.exports.translateToPAD
-In order to aggregate all the affective data, Tot needs to translate the data coming from each different service to the same format, that is, the [PAD](https://en.wikipedia.org/wiki/PAD_emotional_state_model) format. This way, each affective result coming from any detector is translated to a triplet of three numbers, being each one a value between -1 and 1 which stands for how negative or positive the expressed emotion is, how relaxed or excited the person is and how much passive or dominant does that person feel while feeling that emotion, respectively.
+In order to aggregate all the affective data, HERA needs to translate the data coming from each different service to the same format, that is, the [PAD](https://en.wikipedia.org/wiki/PAD_emotional_state_model) format. This way, each affective result coming from any detector is translated to a triplet of three numbers, being each one a value between -1 and 1 which stands for how negative or positive the expressed emotion is, how relaxed or excited the person is and how much passive or dominant does that person feel while feeling that emotion, respectively.
 
 ```javascript
 // E.g.
